@@ -19,6 +19,11 @@ def main():
     foldx.runFoldxSimpleMutator(mutation_code, [prefix + '.pdb'])
     (new_mutant_name, old_mutant_name) = recode_mutant_pdb(mutation_code, site, prefix)
 
+    #Make sure both pdbs exist
+    if not os.path.isfile(new_mutant_name) or not os.path.isfile(old_mutant_name):
+      score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
+      continue
+
     score_ob = foldx.Scores()
     foldx.runFoldxAnalyzeComplex(new_mutant_name[0:-4] + '_complex', [old_mutant_name, new_mutant_name])
     print('\n\nThese are the names: ' + old_mutant_name + ' ' + new_mutant_name)
