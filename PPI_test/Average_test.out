@@ -1,0 +1,10 @@
+FoldX 3.0 Beta 6 (2011)
+by the FoldX Consortium 
+Jesper Borg, Frederic Rousseau, Joost Schymkowitz,
+Luis Serrano and Francois Stricher
+------------------------------------------------------
+
+PDB file analysed: A141P.pdb
+Output type: BuildModel
+Pdb	SD	total energy	Backbone Hbond	Sidechain Hbond	Van der Waals	Electrostatics	Solvation Polar	Solvation Hydrophobic	Van der Waals clashes	entropy sidechain	entropy mainchain	sloop_entropy	mloop_entropy	cis_bond	torsional clash	backbone clash	helix dipole	water bridge	disulfide	electrostatic kon	partial covalent bonds	energy Ionisation	Entropy Complex
+A141P_1	0	0.900711	0.262838	0.241512	0.570299	-0.00141266	-0.19395	0.979781	-0.0173462	-1.17563	0.2356	0	0	4.44089e-16	-0.000976853	-0.0529783	-1.55431e-15	0	0	-2.79776e-14	0	-2.22045e-15	0
