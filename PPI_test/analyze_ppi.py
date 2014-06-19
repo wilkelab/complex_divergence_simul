@@ -30,15 +30,21 @@ def main():
     foldx.runFoldxRepair(a_file, [combined_file])
     repair_file = glob.glob('Repair*.pdb')
     shutil.move(repair_file[0], new_combo)
-    foldx.runFoldxAnalyzeComplex(new_structure2[0:-4] + '_C_combined', [new_combo])
+    foldx.runFoldxAnalyzeComplex(new_combo[0:-4], [new_combo])
 
+    ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')
+    new_structure1 = capture_pdb(a_file[0:-4] + '_A.pdb', a_file, 'A')
+    new_combo = new_structure1[0:-4] + '_A_combined.pdb'
+    combined_file = make_combined_file([new_structure1, ancestral_structure2], new_combo)
+    foldx.runFoldxRepair(a_file, [combined_file])
+    repair_file = glob.glob('Repair*.pdb')
+    shutil.move(repair_file[0], new_combo)
+    foldx.runFoldxAnalyzeComplex(new_combo[0:-4], [new_combo])
+  
     score_ob = foldx.Scores()
+    score_ob.parseAnalyzeComplex()
+    print(score_ob.getInteractionEnergies())
     score_ob.cleanUp([])
-
-  #for a_file in final_pdb_list:
-  #  new_structure1 = capture_pdb(a_file[0:-4] + '_A.pdb', a_file, 'A')
-  #  ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')
-  #  make_combined_file([new_structure1, ancestral_structure2], new_structure1[0:-4] + '_A_combined.pdb')
 
   clean_up(['*_*.pdb'])
 

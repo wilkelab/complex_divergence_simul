@@ -203,7 +203,7 @@ class Scores:
     
   def parseAnalyzeComplex(self):
     self.parseFiles('Interaction_AnalyseComplex_')
-    if 'wt' not in self.files[0]:
+    if 'wt' not in self.files[0] and len(self.files) > 1:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
       
@@ -223,7 +223,7 @@ class Scores:
           (self.interaction_energies).append(self.removeWhiteSpace(energy_list[5]))
 
     self.parseFiles('Indiv_energies_')
-    if 'wt' not in self.files[0]:
+    if 'wt' not in self.files[0] and len(self.files) > 1:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
           
