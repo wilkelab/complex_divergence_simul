@@ -179,8 +179,13 @@ def runFoldxRepair(name, pdbs):
   output.write(fns)
   output.close()
     
+  name = 'run_' + name + '.foldx'
   makeFoldxRepair(name)
-  subprocess.call('/home/austin/local/bin/foldx64Linux -runfile ' + name, shell=True)
+  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
+  status = -1
+  while status < 0:
+    status = subprocess.call(command, shell=True)
+  print('\n\nRepair exit status = ' + str(status))
 
 class Scores:
   def __init__(self):    
