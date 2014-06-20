@@ -17,7 +17,7 @@ def main():
   
   count = 0
 
-  foldx.runFoldxRepair(prefix, [prefix + '.start'])
+  foldx.runFoldxRepair(prefix, [prefix + '.bak'])
   score_ob = foldx.Scores()
   score_ob.cleanUp()
   repair_file = glob.glob('RepairPDB_*pdb')
