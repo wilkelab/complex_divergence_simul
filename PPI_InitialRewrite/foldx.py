@@ -178,9 +178,15 @@ def runFoldxRepair(name, pdbs):
     fns += pdb + '\n'
   output.write(fns)
   output.close()
-    
+
+  name = 'run_' + name + '.foldx'    
   makeFoldxRepair(name)
   subprocess.call('/usr/local/bin/foldx3b6 -runfile ' + name, shell=True)
+  command = '/usr/local/bin/foldx3b6 -runfile ' + name
+  status = -1
+  while status < 0:
+    status = subprocess.call(command, shell=True)
+  print('\n\nRepair exit status = ' + str(status))
 
 def checkOutputMutator(prefix):
   files = glob.glob('*' + prefix + '_*.pdb')

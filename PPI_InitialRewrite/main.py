@@ -17,6 +17,10 @@ def main():
   
   count = 0
 
+  foldx.runFoldxRepair(prefix)
+
+  raise Exception()
+
   for i in range(0, 10000):
     sys.stdout.flush()
     
