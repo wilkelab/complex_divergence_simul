@@ -32,7 +32,7 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
-  for i in range(0, 10000):
+  for i in range(0, 1000):
     sys.stdout.flush()
     
     #Make sure the pdb exists
@@ -81,7 +81,7 @@ def main():
     count += 1
 
     output = open('all_mutants_tried.txt', 'a')
-    to_file = count + '\t' + new_mutant_name[0:-4] + '\n'
+    to_file = str(count) + '\t' + str(new_mutant_name[0:-4]) + '\n'
     output.write(to_file)
     output.close()
 
