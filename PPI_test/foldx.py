@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import subprocess, re
+import subprocess, re, glob, os
 import multiprocessing as mp
 import numpy as np
 
@@ -178,14 +178,41 @@ def runFoldxRepair(name, pdbs):
     fns += pdb + '\n'
   output.write(fns)
   output.close()
-    
-  name = 'run_' + name + '.foldx'
+
+  name = 'run_' + name + '.foldx'    
   makeFoldxRepair(name)
+  subprocess.call('/home/austin/local/bin/foldx64Linux -runfile ' + name, shell=True)
   command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
   print('\n\nRepair exit status = ' + str(status))
+
+def checkOutputMutator(prefix):
+  files = glob.glob('*' + prefix + '_*.pdb')
+  if len(files) == 2:
+    return(True)
+  else:
+    print('\n\nWrong number of output mutator files.\n')
+    return(False)
+
+def checkOutputAnalyzeComplex(prefix):
+  indiv_energy1 = 'Indiv_energies_AnalyseComplex_' + prefix + '.fxout'
+  indiv_energy2 = 'Indiv_energies_AnalyseComplex_' + prefix + '.wt.fxout'
+  inter_energy1 = 'Interaction_AnalyseComplex_' + prefix + '.fxout'
+  inter_energy2 = 'Interaction_AnalyseComplex_' + prefix + '.wt.fxout'
+
+  print(indiv_energy1)
+  print(indiv_energy2)
+  print(inter_energy1)
+  print(inter_energy2)
+
+  if os.path.isfile(indiv_energy1) and os.path.isfile(indiv_energy2) and os.path.isfile(inter_energy1) and os.path.isfile(inter_energy2):
+    print('\n\nThese files are present: ' + indiv_energy1 + ' ' + indiv_energy2 + ' ' + inter_energy1 + ' ' + inter_energy2 + '\n')
+    return(True)
+  else:
+    print('\n\nSome files are missing from Analyze Complex\n')
+    return(False)
 
 class Scores:
   def __init__(self):    
@@ -203,7 +230,7 @@ class Scores:
     
   def parseAnalyzeComplex(self):
     self.parseFiles('Interaction_AnalyseComplex_')
-    if 'wt' not in self.files[0] and len(self.files) > 1:
+    if 'wt' not in self.files[0]:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
       
@@ -223,7 +250,7 @@ class Scores:
           (self.interaction_energies).append(self.removeWhiteSpace(energy_list[5]))
 
     self.parseFiles('Indiv_energies_')
-    if 'wt' not in self.files[0] and len(self.files) > 1:
+    if 'wt' not in self.files[0]:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
           

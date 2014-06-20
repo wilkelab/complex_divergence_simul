@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import foldx, re, shutil, random, os, math, sys
+import foldx, re, shutil, random, os, math, sys, glob
 import numpy as np
 from Bio import *
 import Bio.PDB as PDB
@@ -12,16 +12,60 @@ def main():
   to_file = 'mutant\tbinding\tstability1\tstability2\tprobability'
   output.write(to_file)
   output.close()
-  
-  for i in range(0, 1000):
+
+  all_kept_mutants = []
+  all_mutants_tried = []
+
+  output = open('all_mutants_tried.txt', 'w')
+  to_file = 'count\tmutant\n'
+  output.write(to_file)
+  output.close()
+
+  count = 0
+
+  foldx.runFoldxRepair(prefix, [prefix + '.bak'])
+  score_ob = foldx.Scores()
+  score_ob.cleanUp([])
+  repair_file = glob.glob('RepairPDB_*pdb')
+  if len(repair_file) == 1:
+    shutil.move(repair_file[0], prefix + '.pdb')
+  else:
+    raise Exception('No output from RepairPDB.')
+
+  for i in range(0, 10000):
     sys.stdout.flush()
+    
+    #Make sure the pdb exists
+    if not os.path.isfile(prefix + '.pdb') and i > 0:
+      all_kept_mutants = all_kept_mutants[0:-1]
+      prefix = all_kept_mutants[-1]
+      all_mutants_tried = all_mutants_tried[0:-1]
+      count -= 1
+      continue
+
     (mutation_code, site) = generate_mutation_code(prefix)
     foldx.runFoldxSimpleMutator(mutation_code, [prefix + '.pdb'])
+    proceed = foldx.checkOutputMutator(prefix)
+
+    #See if we got the files we needed from the mutator
+    if not proceed:
+      score_ob = foldx.Scores()
+      score_ob.cleanUp(['*_*.pdb'])
+      continue
+      
     (new_mutant_name, old_mutant_name) = recode_mutant_pdb(mutation_code, site, prefix)
+    foldx.runFoldxAnalyzeComplex(new_mutant_name[0:-4] + '_complex', [old_mutant_name, new_mutant_name])
+    proceed = foldx.checkOutputAnalyzeComplex(new_mutant_name[0:-4])
+
+    #See if we got the files we needed from Analyze Complex
+    if not proceed:
+      score_ob = foldx.Scores()
+      score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
+      continue
+
+    print('\n\nThe problem came after foldx.\n')
 
     score_ob = foldx.Scores()
-    foldx.runFoldxAnalyzeComplex(new_mutant_name[0:-4] + '_complex', [old_mutant_name, new_mutant_name])
-    print('\n\nThese are the names: ' + old_mutant_name + ' ' + new_mutant_name)
     score_ob.parseAnalyzeComplex()
 
     ids = score_ob.getIds()
@@ -31,6 +75,16 @@ def main():
     
     probability = (binding_probability(binding) * stability_probability1(stab1) * stability_probability2(stab2))
 
+    print('\n\nThe problem came after probability calculation\n')
+    
+    all_mutants_tried.append(new_mutant_name[0:-4])
+    count += 1
+
+    output = open('all_mutants_tried.txt', 'a')
+    to_file = count + '\t' + new_mutant_name[0:-4] + '\n'
+    output.write(to_file)
+    output.close()
+
     if random.random() < probability:
       print('\n\nPassing to the next round...\n')
       score_ob.cleanUp([])
@@ -39,10 +93,11 @@ def main():
       output.write(to_file)
       output.close()
       prefix = new_mutant_name[0:-4]
+      all_kept_mutants.append(prefix)
     else:
       print('\n\nMutation is being reverted...\n')
       score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
-  
+
 def generate_mutation_code(prefix):
   start_name = prefix + '.pdb'
 
@@ -106,19 +161,17 @@ def stability_probability2(stab2):
   
 def recode_mutant_pdb(mutation_code, site, prefix):
   mutant = foldx.rev_resdict[mutation_code[-1]]
-  recoded_mutant = mutation_code[0] + site + mutation_code[-1] + '.pdb'
-  pdb_code = mutant + site + '_' + prefix + '.pdb'
+  recoded_mutant = mutation_code[0] + site + mutation_code[-1]
   
-  initial_mutant_name = prefix + '_1.pdb'
-  wt_comparison_name = 'WT_' + prefix + '_1.pdb'
-  if os.path.isfile(initial_mutant_name) and os.path.isfile(wt_comparison_name):
-    shutil.move(initial_mutant_name, recoded_mutant)
-    shutil.move(wt_comparison_name, recoded_mutant[0:-4] + '.wt.pdb')
-    print('\n\nMoved both files.\n')
-  else:
-    raise Exception('\n\nOne of the two required files do not exist.\n')
-  
-  return(recoded_mutant, recoded_mutant[0:-4] + '.wt.pdb')
+  files = glob.glob('*' + prefix + '_*.pdb')
+
+  for a_file in files:
+    if 'WT' in a_file:
+      shutil.move(a_file, recoded_mutant + '.wt.pdb')
+    else:
+      shutil.move(a_file, recoded_mutant + '.pdb')
+
+  return(recoded_mutant + '.pdb', recoded_mutant + '.wt.pdb')
 
 def capture_mutant_pdb(out_name, mutant, chain_letter):
   parser = PDB.PDBParser()

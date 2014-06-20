@@ -14,12 +14,18 @@ def main():
   output.close()
 
   all_kept_mutants = []
-  
+  all_mutants_tried = []
+
+  output = open('all_mutants_tried.txt', 'w')
+  to_file = 'count\tmutant\n'
+  output.write(to_file)
+  output.close()
+
   count = 0
 
   foldx.runFoldxRepair(prefix, [prefix + '.bak'])
   score_ob = foldx.Scores()
-  score_ob.cleanUp()
+  score_ob.cleanUp([])
   repair_file = glob.glob('RepairPDB_*pdb')
   if len(repair_file) == 1:
     shutil.move(repair_file[0], prefix + '.pdb')
@@ -33,6 +39,8 @@ def main():
     if not os.path.isfile(prefix + '.pdb') and i > 0:
       all_kept_mutants = all_kept_mutants[0:-1]
       prefix = all_kept_mutants[-1]
+      all_mutants_tried = all_mutants_tried[0:-1]
+      count -= 1
       continue
 
     (mutation_code, site) = generate_mutation_code(prefix)
@@ -68,6 +76,14 @@ def main():
     probability = (binding_probability(binding) * stability_probability1(stab1) * stability_probability2(stab2))
 
     print('\n\nThe problem came after probability calculation\n')
+    
+    all_mutants_tried.append(new_mutant_name[0:-4])
+    count += 1
+
+    output = open('all_mutants_tried.txt', 'a')
+    to_file = count + '\t' + new_mutant_name[0:-4] + '\n'
+    output.write(to_file)
+    output.close()
 
     if random.random() < probability:
       print('\n\nPassing to the next round...\n')
@@ -78,11 +94,10 @@ def main():
       output.close()
       prefix = new_mutant_name[0:-4]
       all_kept_mutants.append(prefix)
-      count += 1
     else:
       print('\n\nMutation is being reverted...\n')
       score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
-  
+
 def generate_mutation_code(prefix):
   start_name = prefix + '.pdb'
 
