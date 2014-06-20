@@ -1,4 +1,4 @@
-#!/opt/local/bin/python2.7
+#!/usr/bin/python
 
 import subprocess, re, glob, os
 import multiprocessing as mp
@@ -55,7 +55,7 @@ def runFoldxSimpleMutator(mutant, pdbs):
   
   name = 'run_' + str(mutant) + '.foldx'
   makeFoldxBuildModel(mutant, name, 'true')
-  command = '/usr/local/bin/foldx3b6 -runfile ' + name
+  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -97,7 +97,7 @@ def runFoldxStability(name, pdbs):
   
   name = 'run_' + name + '.foldx'
   makeFoldxStability(name)
-  command = '/usr/local/bin/foldx3b6 -runfile ' + name
+  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -139,7 +139,7 @@ def runFoldxAnalyzeComplex(name, pdbs):
 
   name = 'run_' + name + '.foldx'
   makeFoldxAnalyzeComplex(name)
-  command = '/usr/local/bin/foldx3b6 -runfile ' + name
+  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -181,8 +181,8 @@ def runFoldxRepair(name, pdbs):
 
   name = 'run_' + name + '.foldx'    
   makeFoldxRepair(name)
-  subprocess.call('/usr/local/bin/foldx3b6 -runfile ' + name, shell=True)
-  command = '/usr/local/bin/foldx3b6 -runfile ' + name
+  subprocess.call('/home/austin/local/bin/foldx64Linux -runfile ' + name, shell=True)
+  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)

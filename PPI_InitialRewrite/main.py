@@ -1,4 +1,4 @@
-#!/opt/local/bin/python2.7
+#!/usr/bin/python
 
 import foldx, re, shutil, random, os, math, sys, glob
 import numpy as np
@@ -17,9 +17,14 @@ def main():
   
   count = 0
 
-  foldx.runFoldxRepair(prefix)
-
-  raise Exception()
+  foldx.runFoldxRepair(prefix, [prefix + '.start'])
+  score_ob = foldx.Scores()
+  score_ob.cleanUp()
+  repair_file = glob.glob('RepairPDB_*pdb')
+  if len(repair_file) == 1:
+    shutil.move(repair_file[0], prefix + '.pdb')
+  else:
+    raise Exception('No output from RepairPDB.')
 
   for i in range(0, 10000):
     sys.stdout.flush()
