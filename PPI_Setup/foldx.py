@@ -44,6 +44,36 @@ def makeFoldxBuildModel(mutant, name, output_pdb):
   output = open(name, 'w')
   output.write(to_file)
   output.close()
+
+def makeFoldxPositionScan(mutant, name, output_pdb):
+  output = open('individual_list.txt', 'w')
+  output.write(mutant + ';')
+  output.close()
+
+  to_file = '<TITLE>FOLDX_runscript;\n'+\
+            '<JOBSTART>#;\n'+\
+            '<PDBS>#;\n'+\
+            '<BATCH>list.txt;\n'+\
+            '<COMMANDS>FOLDX_commandfile;\n'+\
+            '<PositionScan>#,' + mutant + ';\n'+\
+            '<END>#;\n'+\
+            '<OPTIONS>FOLDX_optionfile;\n'+\
+            '<Temperature>298;\n'+\
+            '<R>#;\n'+\
+            '<pH>7;\n'+\
+            '<IonStrength>0.050;\n'+\
+            '<water>-CRYSTAL;\n'+\
+            '<metal>-CRYSTAL;\n'+\
+            '<VdWDesign>2;\n'+\
+            '<OutPDB>' + output_pdb + ';\n'+\
+            '<pdb_hydrogens>;\n'+\
+            '<END>#;\n'+\
+            '<JOBEND>#;\n'+\
+            '<ENDFILE>#;\n'
+
+  output = open(name, 'w')
+  output.write(to_file)
+  output.close()
   
 def runFoldxSimpleMutator(mutant, pdbs):
   output = open('list.txt', 'w')
@@ -54,7 +84,7 @@ def runFoldxSimpleMutator(mutant, pdbs):
   output.close()
   
   name = 'run_' + str(mutant) + '.foldx'
-  makeFoldxBuildModel(mutant, name, 'true')
+  makeFoldxPositionScan(mutant, name, 'true')
   command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
@@ -189,7 +219,7 @@ def runFoldxRepair(name, pdbs):
   print('\n\nRepair exit status = ' + str(status))
 
 def checkOutputMutator(prefix):
-  files = glob.glob('*' + prefix + '_*.pdb')
+  files = glob.glob('*_' + prefix + '.pdb')
   if len(files) == 2:
     return(True)
   else:
@@ -230,7 +260,7 @@ class Scores:
     
   def parseAnalyzeComplex(self):
     self.parseFiles('Interaction_AnalyseComplex_')
-    if 'wt' not in self.files[0]:
+    if 'wt' not in self.files[0] and len(self.files) > 1:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
       
@@ -250,7 +280,7 @@ class Scores:
           (self.interaction_energies).append(self.removeWhiteSpace(energy_list[5]))
 
     self.parseFiles('Indiv_energies_')
-    if 'wt' not in self.files[0]:
+    if 'wt' not in self.files[0] and len(self.files) > 1:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
           
@@ -340,3 +370,5 @@ class Scores:
       os.remove('list.txt')
     if os.path.isfile('individual_list.txt'):
       os.remove('individual_list.txt')
+    if os.path.isfile('scanning_output.txt'):
+      os.remove('scanning_output.txt')

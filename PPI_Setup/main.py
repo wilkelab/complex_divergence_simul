@@ -32,6 +32,20 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
+  last_interaction_energy = 0
+  last_stability1 = 0
+  last_stability2 = 0
+
+  foldx.runFoldxAnalyzeComplex(prefix + '_complex', [prefix + '.pdb'])
+
+  score_ob = foldx.Scores()
+  score_ob.parseAnalyzeComplex()
+  score_ob.cleanUp(['*energies*'])
+
+  last_interaction_energy = score_ob.getInteractionEnergies()[0]
+  last_stability1 = score_ob.getStability1()[0]
+  last_stability2 = score_ob.getStability1()[1]
+
   for i in range(0, 1000):
     sys.stdout.flush()
     
@@ -46,11 +60,11 @@ def main():
     (mutation_code, site) = generate_mutation_code(prefix)
     foldx.runFoldxSimpleMutator(mutation_code, [prefix + '.pdb'])
     proceed = foldx.checkOutputMutator(prefix)
-
+    
     #See if we got the files we needed from the mutator
     if not proceed:
       score_ob = foldx.Scores()
-      score_ob.cleanUp(['*_*.pdb'])
+      score_ob.cleanUp(['*_*.pdb', '*energies*'])
       continue
       
     (new_mutant_name, old_mutant_name) = recode_mutant_pdb(mutation_code, site, prefix)
@@ -60,7 +74,7 @@ def main():
     #See if we got the files we needed from Analyze Complex
     if not proceed:
       score_ob = foldx.Scores()
-      score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
+      score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*', '*energies*'])
       continue
 
     print('\n\nThe problem came after foldx.\n')
@@ -69,9 +83,9 @@ def main():
     score_ob.parseAnalyzeComplex()
 
     ids = score_ob.getIds()
-    binding = score_ob.getInteractionEnergies()
-    stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
-    stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
+    binding = [last_interaction_energy, score_ob.getInteractionEnergies()[0]]
+    stab1 = [last_stability1, score_ob.getStability1()[0]]
+    stab2 = [last_stability2, score_ob.getStability1()[1]]
     
     probability = (binding_probability(binding) * stability_probability1(stab1) * stability_probability2(stab2))
 
@@ -87,13 +101,18 @@ def main():
 
     if random.random() < probability:
       print('\n\nPassing to the next round...\n')
-      score_ob.cleanUp([])
+      score_ob.cleanUp(['*energies*'])
       output = open('data.txt', 'a')
       to_file = '\n' + str(ids[1]) + '\t' + str(binding[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(probability)
       output.write(to_file)
       output.close()
       prefix = new_mutant_name[0:-4]
       all_kept_mutants.append(prefix)
+      
+      last_interaction_energy = binding[1]
+      last_stability1 = stab1[1]
+      last_stability2 = stab2[1]
+
     else:
       print('\n\nMutation is being reverted...\n')
       score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
@@ -163,10 +182,10 @@ def recode_mutant_pdb(mutation_code, site, prefix):
   mutant = foldx.rev_resdict[mutation_code[-1]]
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
   
-  files = glob.glob('*' + prefix + '_*.pdb')
+  files = glob.glob('*_' + prefix + '.pdb')
 
   for a_file in files:
-    if 'WT' in a_file:
+    if foldx.rev_resdict[a_file[0]] in a_file:
       shutil.move(a_file, recoded_mutant + '.wt.pdb')
     else:
       shutil.move(a_file, recoded_mutant + '.pdb')
