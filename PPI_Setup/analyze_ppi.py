@@ -63,7 +63,10 @@ def main():
 
         score_ob.parseAnalyzeComplex()
         inter = score_ob.getInteractionEnergies()[0]
-        stab = score_ob.getStability2()[1]
+        stab = score_ob.getStability1()[1]
+        print(stab)
+      else:
+        continue
 
     else:
       if all_tried[a_file[0:-4]] % interval == 0:
@@ -80,6 +83,9 @@ def main():
         score_ob.parseAnalyzeComplex()
         inter = score_ob.getInteractionEnergies()[0]
         stab = score_ob.getStability1()[0]
+        print(stab)
+      else:
+        continue
 
     output = open('ancestral_comparisons.txt', 'a')
     to_file = str(a_file[0:-4]) + str(chain) +'\t' + str(all_tried[a_file[0:-4]]) + '\t' + str(inter) + '\t' + str(stab) + '\n'
