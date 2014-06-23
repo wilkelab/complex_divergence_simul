@@ -32,20 +32,6 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
-  last_interaction_energy = 0
-  last_stability1 = 0
-  last_stability2 = 0
-
-  foldx.runFoldxAnalyzeComplex(prefix + '_complex', [prefix + '.pdb'])
-
-  score_ob = foldx.Scores()
-  score_ob.parseAnalyzeComplex()
-  score_ob.cleanUp(['*energies*'])
-
-  last_interaction_energy = score_ob.getInteractionEnergies()[0]
-  last_stability1 = score_ob.getStability1()[0]
-  last_stability2 = score_ob.getStability1()[1]
-
   for i in range(0, 1000):
     sys.stdout.flush()
     
@@ -83,9 +69,9 @@ def main():
     score_ob.parseAnalyzeComplex()
 
     ids = score_ob.getIds()
-    binding = [last_interaction_energy, score_ob.getInteractionEnergies()[0]]
-    stab1 = [last_stability1, score_ob.getStability1()[0]]
-    stab2 = [last_stability2, score_ob.getStability1()[1]]
+    binding = score_ob.getInteractionEnergies()
+    stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
+    stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
     probability = (binding_probability(binding) * stability_probability1(stab1) * stability_probability2(stab2))
 
@@ -108,11 +94,6 @@ def main():
       output.close()
       prefix = new_mutant_name[0:-4]
       all_kept_mutants.append(prefix)
-      
-      last_interaction_energy = binding[1]
-      last_stability1 = stab1[1]
-      last_stability2 = stab2[1]
-
     else:
       print('\n\nMutation is being reverted...\n')
       score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
