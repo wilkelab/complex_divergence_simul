@@ -17,7 +17,7 @@ def main():
   all_mutants_tried = []
 
   output = open('all_mutants_tried.txt', 'w')
-  to_file = 'count\tmutant\n'
+  to_file = 'count\tmutant\tstability1\tstability2\tbinding\n'
   output.write(to_file)
   output.close()
 
@@ -32,7 +32,7 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
-  for i in range(0, 1000):
+  for i in range(0, 10000):
     sys.stdout.flush()
     
     #Make sure the pdb exists
@@ -46,7 +46,7 @@ def main():
     (mutation_code, site) = generate_mutation_code(prefix)
     foldx.runFoldxSimpleMutator(mutation_code, [prefix + '.pdb'])
     proceed = foldx.checkOutputMutator(prefix)
-    
+
     #See if we got the files we needed from the mutator
     if not proceed:
       score_ob = foldx.Scores()
@@ -73,7 +73,7 @@ def main():
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
-    probability = (binding_probability(binding) * stability_probability1(stab1) * stability_probability2(stab2))
+    probability = (calc_prob(binding)[1] * calc_prob(stab1)[1] * calc_prob(stab2)[1])
 
     print('\n\nThe problem came after probability calculation\n')
     
@@ -81,7 +81,7 @@ def main():
     count += 1
 
     output = open('all_mutants_tried.txt', 'a')
-    to_file = str(count) + '\t' + str(new_mutant_name[0:-4]) + '\n'
+    to_file = str(count) + '\t' + str(ids[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + str(binding[1]) + '\t' + str(probability) + '\n'
     output.write(to_file)
     output.close()
 
@@ -138,36 +138,25 @@ def generate_mutation_code(prefix):
   
   return(mutation_code, residue_numbers[site])
   
-def binding_probability(binding):
-    binding_ddG = float(binding[1]) - float(binding[0])
-    if binding_ddG <= 0:
-      return(1.0)
-    elif binding_ddG > 0:
-      return(math.exp(-binding_ddG) * (binding_ddG))
+def calc_prob(data):
+    ddG = float(data[1]) - float(data[0])
+    if ddG <= 0.0:
+      return((ddG, 1.0))
+    else:
+      return((ddG, math.exp(-ddG) * (ddG)))
       
-def stability_probability1(stab1):
-    stab1_ddG = float(stab1[1]) - float(stab1[0])
-    if stab1_ddG <= 0:
-      return(1.0)
-    elif stab1_ddG > 0:
-      return(math.exp(-stab1_ddG) * (stab1_ddG))
-      
-def stability_probability2(stab2):
-    stab2_ddG = float(stab2[1]) - float(stab2[0])
-    if stab2_ddG <= 0:
-      return(1.0)
-    elif stab2_ddG > 0:
-      return(math.exp(-stab2_ddG) * (stab2_ddG))
-  
 def recode_mutant_pdb(mutation_code, site, prefix):
-  mutant = foldx.rev_resdict[mutation_code[-1]]
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
   
   files = glob.glob('*_' + prefix + '.pdb')
 
   for a_file in files:
-    if foldx.rev_resdict[a_file[0]] in a_file:
+    if foldx.rev_resdict[recoded_mutant[0]] in a_file:
       shutil.move(a_file, recoded_mutant + '.wt.pdb')
+
+      #This line makes it so the energy is evaluated relative to the last best mutant
+      #Comment the line out if you want to evaluate the energy versus the repositioned WT output from positionscan
+      shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')
     else:
       shutil.move(a_file, recoded_mutant + '.pdb')
 
