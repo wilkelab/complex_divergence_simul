@@ -81,7 +81,7 @@ def main():
     count += 1
 
     output = open('all_mutants_tried.txt', 'a')
-    to_file = str(count) + '\t' + str(ids[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + str(binding[1]) + '\t' + str(probability) + '\n'
+    to_file = str(count) + '\t' + str(ids[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(binding[1]) + '\t' + str(probability) + '\n'
     output.write(to_file)
     output.close()
 
