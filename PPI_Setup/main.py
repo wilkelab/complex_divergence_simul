@@ -32,7 +32,7 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
-  for i in range(0, 1000):
+  for i in range(0, 10000):
     sys.stdout.flush()
     
     #Make sure the pdb exists
@@ -81,7 +81,7 @@ def main():
     count += 1
 
     output = open('all_mutants_tried.txt', 'a')
-    to_file = str(count) + '\t' + str(ids) + '\t' + str(stab1) + '\t' + str(stab2) + '\t' + str(binding) + '\t' + str(probability) + '\n'
+    to_file = str(count) + '\t' + str(ids[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(binding[1]) + '\t' + str(probability) + '\n'
     output.write(to_file)
     output.close()
 
@@ -89,7 +89,7 @@ def main():
       print('\n\nPassing to the next round...\n')
       score_ob.cleanUp(['*energies*'])
       output = open('data.txt', 'a')
-      to_file = '\n' + str(ids) + '\t' + str(binding) + '\t' + str(stab1) + '\t' + str(stab2) + '\t' + str(probability)
+      to_file = '\n' + str(ids[1]) + '\t' + str(binding[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(probability)
       output.write(to_file)
       output.close()
       prefix = new_mutant_name[0:-4]
