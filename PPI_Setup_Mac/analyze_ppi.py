@@ -16,7 +16,7 @@ def main():
   all_pdbs = glob.glob('*.pdb')
   final_pdb_list = []
   for a_file in all_pdbs:
-    if 'wt' not in a_file:
+    if 'wt' not in a_file and '2eke' not in a_file:
       final_pdb_list.append(a_file)
 
   print(final_pdb_list)
