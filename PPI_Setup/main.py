@@ -143,7 +143,7 @@ def calc_prob(data):
     if ddG <= 0.0:
       return((ddG, 1.0))
     else:
-      return((ddG, math.exp(-5 * ddG) * (ddG)))
+      return((ddG, math.exp(-ddG)))
       
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
