@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/local/bin/python2.7
 
 import subprocess, re, glob, os
 import multiprocessing as mp

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/local/bin/python2.7
 
 import foldx, re, shutil, random, os, math, sys, glob
 import numpy as np
