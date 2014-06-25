@@ -1,4 +1,4 @@
-#!/opt/local/bin/python2.7
+#!/usr/bin/python
 
 import foldx, re, shutil, random, os, math, sys, subprocess, glob
 import numpy as np
@@ -88,7 +88,7 @@ def main():
         continue
 
     output = open('ancestral_comparisons.txt', 'a')
-    to_file = str(a_file[0:-4]) + str(chain) +'\t' + str(all_tried[a_file[0:-4]]) + '\t' + str(inter) + '\t' + str(stab) + '\n'
+    to_file = str(a_file) + str(chain) +'\t' + str(all_tried[a_file]) + '\t' + str(inter) + '\t' + str(stab) + '\n'
     output.write(to_file)
     output.close()
 
