@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/local/bin/python2.7
 
 import foldx, re, shutil, random, os, math, sys, subprocess, glob
 import numpy as np
@@ -36,7 +36,7 @@ def main():
     if split[0] == 'count':
       continue
     else:
-      if float((split[1])[1:-2]) <= 156:
+      if float((split[1])[1:-5]) <= 156:
         all_tried_A += 1
         all_tried[rmWS(split[1])] = all_tried_A
       else:
@@ -50,7 +50,7 @@ def main():
     score_ob = foldx.Scores()
 
     if float(a_file[1:-5]) > 156:
-      if all_tried[a_file[0:-4]] % interval == 0: 
+      if all_tried[a_file] % interval == 0: 
         ancestral_structure1 = capture_pdb(start_structure[0:-4] + '_A.pdb', start_structure, 'A')
         new_structure2 = capture_pdb(a_file[0:-4] + '_C.pdb', a_file, 'C')
         new_combo = new_structure2[0:-4] + '_combined.pdb'
@@ -69,7 +69,7 @@ def main():
         continue
 
     else:
-      if all_tried[a_file[0:-4]] % interval == 0:
+      if all_tried[a_file] % interval == 0:
         ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')
         new_structure1 = capture_pdb(a_file[0:-4] + '_A.pdb', a_file, 'A')
         new_combo = new_structure1[0:-4] + '_combined.pdb'
