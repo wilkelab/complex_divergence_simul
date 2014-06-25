@@ -85,7 +85,7 @@ def runFoldxSimpleMutator(mutant, pdbs):
   
   name = 'run_' + str(mutant) + '.foldx'
   makeFoldxPositionScan(mutant, name, 'true')
-  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
+  command = '/usr/local/bin/foldx3b6 -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -127,7 +127,7 @@ def runFoldxStability(name, pdbs):
   
   name = 'run_' + name + '.foldx'
   makeFoldxStability(name)
-  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
+  command = '/usr/local/bin/foldx3b6 -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -169,7 +169,7 @@ def runFoldxAnalyzeComplex(name, pdbs):
 
   name = 'run_' + name + '.foldx'
   makeFoldxAnalyzeComplex(name)
-  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
+  command = '/usr/local/bin/foldx3b6 -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -211,8 +211,8 @@ def runFoldxRepair(name, pdbs):
 
   name = 'run_' + name + '.foldx'    
   makeFoldxRepair(name)
-  subprocess.call('/home/austin/local/bin/foldx64Linux -runfile ' + name, shell=True)
-  command = '/home/austin/local/bin/foldx64Linux -runfile ' + name
+  subprocess.call('/usr/local/bin/foldx3b6 -runfile ' + name, shell=True)
+  command = '/usr/local/bin/foldx3b6 -runfile ' + name
   status = -1
   while status < 0:
     status = subprocess.call(command, shell=True)
@@ -260,7 +260,7 @@ class Scores:
     
   def parseAnalyzeComplex(self):
     self.parseFiles('Interaction_AnalyseComplex_')
-    if 'wt' not in self.files[0]:
+    if 'wt' not in self.files[0] and len(self.files) > 1:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
       
@@ -280,7 +280,7 @@ class Scores:
           (self.interaction_energies).append(self.removeWhiteSpace(energy_list[5]))
 
     self.parseFiles('Indiv_energies_')
-    if 'wt' not in self.files[0]:
+    if 'wt' not in self.files[0] and len(self.files) > 1:
       new_files = [self.files[1], self.files[0]]
       self.files = new_files
           
