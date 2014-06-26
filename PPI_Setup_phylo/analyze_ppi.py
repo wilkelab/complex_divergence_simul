@@ -1,7 +1,6 @@
-#!/usr/bin/python
+#!/share/apps/python-2.7.2/bin/python
 
 import foldx, re, shutil, random, os, math, sys, subprocess, glob
-import numpy as np
 from Bio import *
 import Bio.PDB as PDB
 

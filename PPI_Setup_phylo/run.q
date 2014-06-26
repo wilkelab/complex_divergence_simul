@@ -29,7 +29,7 @@ cd $WDIR
 cp $FDIR/* .
 
 # Command to run
-./main.py 2> main.log 1> main.log
+/share/apps/python-2.7.2/bin/python main.py 2> main.log 1> main.log
 
 # Copy Results Back to Home Directory
 mkdir -p $RDIR

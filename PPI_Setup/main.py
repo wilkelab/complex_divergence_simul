@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import foldx, re, shutil, random, os, math, sys, glob
-import numpy as np
 from Bio import *
 import Bio.PDB as PDB
 
