@@ -20,7 +20,10 @@ def main():
   output.write(to_file)
   output.close()
 
+  #Should we select for binding on both, on one, or on none
   count = 0
+  both = False
+  one = True
 
   foldx.runFoldxRepair(prefix, [prefix + '.bak'])
   score_ob = foldx.Scores()
@@ -72,7 +75,12 @@ def main():
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
-    probability = (calc_prob(binding)[1] * calc_prob(stab1)[1] * calc_prob(stab2)[1])
+    if float(new_mutant_name[1:-5]) <= 156 and not both and one:
+      probability = calc_prob(stab1)[1] * calc_prob(stab2)[1]
+    elif one:
+      probability = calc_prob(binding)[1] * calc_prob(stab1)[1] * calc_prob(stab2)[1]
+    else:
+      probability = calc_prob(stab1)[1] * calc_prob(stab2)[1]
 
     print('\n\nThe problem came after probability calculation\n')
     
