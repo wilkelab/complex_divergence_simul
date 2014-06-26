@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import foldx, re, shutil, random, os, math, sys, subprocess, glob
+import numpy as np
 from Bio import *
 import Bio.PDB as PDB
 
@@ -37,10 +38,12 @@ def main():
     else:
       if float((split[1])[1:-5]) <= 156:
         all_tried_A += 1
-        all_tried[rmWS(split[1])] = all_tried_A
+        if rmWS(split[1]) not in all_tried.keys():
+          all_tried[rmWS(split[1])] = all_tried_A
       else:
         all_tried_C += 1
-        all_tried[rmWS(split[1])] = all_tried_C
+        if rmWS(split[1]) not in all_tried.keys():
+          all_tried[rmWS(split[1])] = all_tried_C
 
   #Make binding comparison using ancestral chain A
   for a_file in final_pdb_list:
