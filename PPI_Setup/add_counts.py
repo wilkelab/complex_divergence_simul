@@ -48,7 +48,7 @@ def main():
       else:
         chain = '_C'
 
-      to_file = split[0] + chain +'\t' + str(all_tried[split[0]][1]) + '\t' + str(all_tried[split[0][0]) + '\t' + split[1] + '\t' + split[2] + '\t' + split[3] + '\n'
+      to_file = split[0] + chain +'\t' + str(all_tried[split[0]][1]) + '\t' + str(all_tried[split[0]][0]) + '\t' + split[1] + '\t' + split[2] + '\t' + split[3] + '\n'
       output.write(to_file)
     
   output.close()
