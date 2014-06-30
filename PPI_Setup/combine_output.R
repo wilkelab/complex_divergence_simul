@@ -1,4 +1,4 @@
-start <- 'one/'
+start <- 'both/'
 dirs <- list.files(start)
 
 ab.counts <- c()
@@ -16,6 +16,14 @@ for(i in dirs) {
   stab2 <- append(stab2, dat$stab2); 
   binding<-append(binding, dat$binding); 
   name <- append(name, dat$mutant)
+  print(dim(dat))
 }
 
-all.data <- data.frame(names=name, ab.counts=ab.counts, rel.counts=rel.counts, binding=binding, stab1=stab1, stab2=stab2)
+print(length(name))
+print(length(ab.counts))
+print(length(rel.counts))
+print(length(binding))
+print(length(stab1))
+print(length(stab2))
+
+all.data.evolved <- data.frame(names=name, ab.counts=ab.counts, rel.counts=rel.counts, binding=binding, stab1=stab1, stab2=stab2)
