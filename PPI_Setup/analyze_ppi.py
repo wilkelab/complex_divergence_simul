@@ -13,55 +13,41 @@ def main():
 
   #make_combined_file([ancestral_structure1, ancestral_structure2], start_structure[0:-4] + '_combined.pdb')
   
-  all_pdbs = glob.glob('*.pdb')
-  final_pdb_list = []
-  for a_file in all_pdbs:
-    if 'wt' not in a_file and '2eke' not in a_file:
-      final_pdb_list.append(a_file)
+  all_lines = (open('data.txt', 'r')).readlines()
+  all_data = []
 
-  print(final_pdb_list)
+  for a_line in all_lines:
+    split = a_line.split('\t')
+    if split[0] == 'mutant':
+      continue
+    else:
+      if int(split[1:-5]) <= 156:
+        all_data.append([split[0], split[1], split[2], split[3], split[4], split[5], 'A'])
+      else:
+        all_data.append([split[0], split[1], split[2], split[3], split[4], split[5], 'C'])
 
   output = open('ancestral_comparisons.txt', 'w')
-  to_file = 'name\tcount\tinteraction\tstability\n'
+  to_file = 'name\tcount\tevolved_interaction\tancestral_interaction\tstability\n'
   output.write(to_file)
   output.close()
 
-  all_tried_A = 0
-  all_tried_C = 0
-  all_tried = {}
-
-  input_handle = open('all_mutants_tried.txt', 'r')
-  for a_line in input_handle.readlines():
-    split = a_line.split('\t')
-    if split[0] == 'count':
-      continue
-    else:
-      if float((split[1])[1:-5]) <= 156:
-        all_tried_A += 1
-        if rmWS(split[1]) not in all_tried.keys():
-          all_tried[rmWS(split[1])] = all_tried_A
-      else:
-        all_tried_C += 1
-        if rmWS(split[1]) not in all_tried.keys():
-          all_tried[rmWS(split[1])] = all_tried_C
-
   #Make binding comparison using ancestral chain A
-  for a_file in final_pdb_list:
-    chain = ''
+  for i in range(0, len(all_data)):
     interval = 5
     score_ob = foldx.Scores()
 
-    if float(a_file[1:-5]) > 156:
-      if all_tried[a_file] % interval == 0: 
+    a_mutant = all_data[i]
+
+    if float(a_mutant[0][1:-5]) > 156:
+      if i % interval == 0: 
         ancestral_structure1 = capture_pdb(start_structure[0:-4] + '_A.pdb', start_structure, 'A')
-        new_structure2 = capture_pdb(a_file[0:-4] + '_C.pdb', a_file, 'C')
+        new_structure2 = capture_pdb(a_mutant[0][0:-4] + '_C.pdb', a_file, 'C')
         new_combo = new_structure2[0:-4] + '_combined.pdb'
         combined_file = make_combined_file([ancestral_structure1, new_structure2], new_combo)
-        foldx.runFoldxRepair(a_file, [combined_file])
+        foldx.runFoldxRepair(a_mutant[0], [combined_file])
         repair_file = glob.glob('Repair*.pdb')
         shutil.move(repair_file[0], new_combo)
         foldx.runFoldxAnalyzeComplex(new_combo[0:-4], [new_combo])
-        chain = '_C'
 
         score_ob.parseAnalyzeComplex()
         inter = score_ob.getInteractionEnergies()[0]
@@ -71,16 +57,15 @@ def main():
         continue
 
     else:
-      if all_tried[a_file] % interval == 0:
+      if i % interval == 0:
         ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')
-        new_structure1 = capture_pdb(a_file[0:-4] + '_A.pdb', a_file, 'A')
+        new_structure1 = capture_pdb(a_mutant[0][0:-4] + '_A.pdb', a_file, 'A')
         new_combo = new_structure1[0:-4] + '_combined.pdb'
         combined_file = make_combined_file([new_structure1, ancestral_structure2], new_combo)
-        foldx.runFoldxRepair(a_file, [combined_file])
+        foldx.runFoldxRepair(a_mutant[0], [combined_file])
         repair_file = glob.glob('Repair*.pdb')
         shutil.move(repair_file[0], new_combo)
         foldx.runFoldxAnalyzeComplex(new_combo[0:-4], [new_combo])
-        chain = '_A'
       
         score_ob.parseAnalyzeComplex()
         inter = score_ob.getInteractionEnergies()[0]
@@ -90,7 +75,7 @@ def main():
         continue
 
     output = open('ancestral_comparisons.txt', 'a')
-    to_file = str(a_file) + str(chain) +'\t' + str(all_tried[a_file]) + '\t' + str(inter) + '\t' + str(stab) + '\n'
+    to_file = a_mutant[0] + '_' + a_mutant[6] +'\t' + a_mutant[1] + '\t' + a_mutant[2] + '\t' + '\t' + str(inter) + '\t' + str(stab) + '\n'
     output.write(to_file)
     output.close()
 

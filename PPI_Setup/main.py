@@ -8,7 +8,7 @@ def main():
   prefix = '2eke'
       
   output = open('data.txt', 'w')
-  to_file = 'mutant\tbinding\tstability1\tstability2\tprobability'
+  to_file = 'mutant\tcount\tbinding\tstability1\tstability2\tprobability'
   output.write(to_file)
   output.close()
 
@@ -96,7 +96,7 @@ def main():
       print('\n\nPassing to the next round...\n')
       score_ob.cleanUp(['*energies*'])
       output = open('data.txt', 'a')
-      to_file = '\n' + str(ids[1]) + '\t' + str(binding[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(probability)
+      to_file = '\n' + str(ids[1]) + '\t' + str(count) + '\t' + str(binding[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(probability)
       output.write(to_file)
       output.close()
       prefix = new_mutant_name[0:-4]
@@ -150,7 +150,8 @@ def calc_prob(data):
     if ddG <= 0.0:
       return((ddG, 1.0))
     else:
-      return((ddG, math.exp(-ddG)))
+      #Adjust this alpha parameter to narrow the distribution of accepted changes
+      return((ddG, math.exp(-2*ddG)))
       
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
