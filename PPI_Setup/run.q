@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N PPI
+#$ -N AV
 #$ -e error_file
 #$ -o out_file
 #$ -S /bin/bash

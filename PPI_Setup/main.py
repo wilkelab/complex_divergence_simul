@@ -22,7 +22,7 @@ def main():
 
   #Should we select for binding on both, on one, or on none
   count = 0
-  both = False
+  both = True
   one = True
 
   foldx.runFoldxRepair(prefix, [prefix + '.bak'])
@@ -76,11 +76,11 @@ def main():
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
     if float(new_mutant_name[1:-5]) <= 156 and not both and one:
-      probability = calc_prob(stab1)[1] * calc_prob(stab2)[1]
+      probability = calc_prob(stab1, 1.8)[1] * calc_prob(stab2, 1.8)[1]
     elif one:
-      probability = calc_prob(binding)[1] * calc_prob(stab1)[1] * calc_prob(stab2)[1]
+      probability = calc_prob(binding, 2.0)[1] * calc_prob(stab1, 1.8)[1] * calc_prob(stab2, 1.8)[1]
     else:
-      probability = calc_prob(stab1)[1] * calc_prob(stab2)[1]
+      probability = calc_prob(stab1, 1.8)[1] * calc_prob(stab2, 1.8)[1]
 
     print('\n\nThe problem came after probability calculation\n')
     
@@ -145,13 +145,13 @@ def generate_mutation_code(prefix):
   
   return(mutation_code, residue_numbers[site])
   
-def calc_prob(data):
+def calc_prob(data, alpha):
     ddG = float(data[1]) - float(data[0])
     if ddG <= 0.0:
       return((ddG, 1.0))
     else:
       #Adjust this alpha parameter to narrow the distribution of accepted changes
-      return((ddG, math.exp(-2*ddG)))
+      return((ddG, math.exp(-alpha*ddG)))
       
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
