@@ -153,7 +153,7 @@ def calc_prob(stab1, stab2, binding, N, beta, threshold):
   origin = [float(stab1[0]), float(stab2[0]), float(binding[0])]
 
   xi = calc_x(origin, beta, threshold)
-  xj = calc_x(mutant, beta, threshold))
+  xj = calc_x(mutant, beta, threshold)
 
   if xj > xi:
     return((1.0))
