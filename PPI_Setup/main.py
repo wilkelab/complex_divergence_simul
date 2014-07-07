@@ -16,7 +16,7 @@ def main():
   all_mutants_tried = []
 
   output = open('all_mutants_tried.txt', 'w')
-  to_file = 'count\tmutant\tstability1\tstability2\tbinding\n'
+  to_file = 'count\tmutant\tstability1\tstability2\tbinding\tprobability\n'
   output.write(to_file)
   output.close()
 
@@ -152,11 +152,14 @@ def calc_prob(stab1, stab2, binding, N, beta, threshold):
   mutant = [float(stab1[1]), float(stab2[1]), float(binding[1])]
   origin = [float(stab1[0]), float(stab2[0]), float(binding[0])]
 
-  if sum([x<=y for x, y in zip(mutant, origin)]) == len(mutant):
+  xi = calc_x(origin, beta, threshold)
+  xj = calc_x(mutant, beta, threshold))
+
+  if xj > xi:
     return((1.0))
   else:
     #Need to make sure you check numbers that are too big for the math library
-    exponent = -2 * float(N) * (calc_x(origin, beta, threshold) - calc_x(mutant, beta, threshold))
+    exponent = -2 * float(N) * (xi - xj)
     
     return(safe_calc(exponent))
 
