@@ -65,8 +65,6 @@ def main():
       score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*', '*energies*'])
       continue
 
-    print('\n\nThe problem came after foldx.\n')
-
     score_ob = foldx.Scores()
     score_ob.parseAnalyzeComplex()
 
@@ -79,9 +77,7 @@ def main():
       #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
       probability = calc_prob(stab1, stab2, binding, 10000, 1, -10)
     else:
-      raise Exception("We're not doing both.")
-
-    print('\n\nThe problem came after probability calculation\n')
+      raise Exception("We're not doing both?")
     
     all_mutants_tried.append(new_mutant_name[0:-4])
     count += 1
@@ -159,14 +155,26 @@ def calc_prob(stab1, stab2, binding, N, beta, threshold):
   if sum([x<=y for x, y in zip(mutant, origin)]) == len(mutant):
     return((1.0))
   else:
-    return((math.exp(-2 * float(N) * (calc_x(mutant, beta, threshold) - calc_x(origin, beta, threshold))) ))
+    #Need to make sure you check numbers that are too big for the math library
+    exponent = -2 * float(N) * (calc_x(origin, beta, threshold) - calc_x(mutant, beta, threshold))
+    
+    return(safe_calc(exponent))
 
 def calc_x(data, beta, threshold):
   total = 0
   for i in data:
-    total += -math.log(math.exp(float(beta) * (float(i) - float(threshold))) + 1)
+    #Need to make sure you check numbers that are too big for the math library
+    exponent = float(beta) * (float(i) - float(threshold))
+
+    total += -math.log(safe_calc(exponent) + 1)
 
   return(total)
+
+def safe_calc(exponent):
+  if exponent > 500:
+    return(1.0)
+  else:
+    return(math.exp(exponent))
       
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
