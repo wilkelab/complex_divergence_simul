@@ -65,17 +65,20 @@ def main():
       score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*', '*energies*'])
       continue
 
+    #Declare the score parsing object
     score_ob = foldx.Scores()
     score_ob.parseAnalyzeComplex()
 
+    #Grab the scores to be used in the probability calculations
     ids = score_ob.getIds()
-    binding = score_ob.getInteractionEnergies()
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
+    binding = score_ob.getInteractionEnergies()
+    thresholds = [-19.7, -4.2, -10.5]
     
     if both:
       #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
-      probability = calc_prob(stab1, stab2, binding, 10000, 1, -10)
+      probability = calc_prob(stab1, stab2, binding, 10000, 1, )
     else:
       raise Exception("We're not doing both?")
     
@@ -140,20 +143,22 @@ def generate_mutation_code(prefix):
   
   return(mutation_code, residue_numbers[site])
   
-def calc_prob(stab1, stab2, binding, N, beta, threshold):
+def calc_prob(stab1, stab2, binding, N, beta, thresholds):
   '''In other to use this function, you need to provide a number of parameters.
      The stab1, stab2, and binding data should be coming from the foldx values
      and they need to be ABSOLUTE energy not differences.  The N, beta and 
      threshold numbers need to specified for the theoretical population size,
-     the beta distribution constant, and the soft threshold for survival.  
+     the beta distribution constant, and the soft threshold for survival of 
+     each protein in the complex.
+  
      At this point, the function cannot be used if binding on both chains is
      not desired.'''
 
-  mutant = [float(stab1[1]), float(stab2[1]), float(binding[1])]
-  origin = [float(stab1[0]), float(stab2[0]), float(binding[0])]
+  mutant = [stab1[1], stab2[1], binding[1]]
+  origin = [stab1[0], stab2[0], binding[0]]
 
-  xi = calc_x(origin, beta, threshold)
-  xj = calc_x(mutant, beta, threshold)
+  xi = calc_x(origin, beta, thresholds)
+  xj = calc_x(mutant, beta, thresholds)
 
   if xj > xi:
     return((1.0))
@@ -163,11 +168,11 @@ def calc_prob(stab1, stab2, binding, N, beta, threshold):
     
     return(safe_calc(exponent))
 
-def calc_x(data, beta, threshold):
+def calc_x(data, beta, thresholds):
   total = 0
-  for i in data:
+  for i in range(0, len(data)):
     #Need to make sure you check numbers that are too big for the math library
-    exponent = float(beta) * (float(i) - float(threshold))
+    exponent = float(beta) * (float(data[i]) - float(thresholds[i]))
 
     total += -math.log(safe_calc(exponent) + 1)
 
