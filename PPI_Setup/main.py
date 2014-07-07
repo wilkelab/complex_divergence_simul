@@ -76,7 +76,8 @@ def main():
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
     if both:
-      probability = calc_prob(stab1, stab2, binding)[1]
+      #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
+      probability = calc_prob(stab1, stab2, binding, 10000, 1, -10)[1]
     else:
       raise Exception("We're not doing both.")
 
@@ -158,7 +159,6 @@ def calc_prob(stab1, stab2, binding, N, beta, threshold):
   if sum([x<=y for x, y in zip(mutant, origin)]) == len(mutant):
     return((ddG, 1.0))
   else:
-    xi = 
     return(( ddG, math.exp(-2 * N * (calc_x(mutant, beta, threshold) - calc_x(origin, beta, threshold))) ))
 
 def calc_x(data, beta, threshold):
