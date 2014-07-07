@@ -75,7 +75,7 @@ def main():
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
-    if float(new_mutant_name[1:-5]) <= 156 and both and one:
+    if both:
       probability = calc_prob(stab1, stab2, binding)[1]
     else:
       raise Exception("We're not doing both.")
