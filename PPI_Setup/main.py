@@ -74,11 +74,11 @@ def main():
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     binding = score_ob.getInteractionEnergies()
-    thresholds = [-19.7, -4.2, -10.5]
+    thresholds = [-19.7, -4.2, -10]
     
     if both:
       #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
-      probability = calc_prob(stab1, stab2, binding, 10000, 1, )
+      probability = calc_prob(stab1, stab2, binding, 10000, 1, thresholds)
     else:
       raise Exception("We're not doing both?")
     
