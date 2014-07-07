@@ -75,12 +75,10 @@ def main():
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     
-    if float(new_mutant_name[1:-5]) <= 156 and not both and one:
-      probability = calc_prob(stab1, 1.8)[1] * calc_prob(stab2, 1.8)[1]
-    elif one:
-      probability = calc_prob(binding, 2.0)[1] * calc_prob(stab1, 1.8)[1] * calc_prob(stab2, 1.8)[1]
+    if float(new_mutant_name[1:-5]) <= 156 and both and one:
+      probability = calc_prob(stab1, stab2, binding)[1]
     else:
-      probability = calc_prob(stab1, 1.8)[1] * calc_prob(stab2, 1.8)[1]
+      raise Exception("We're not doing both.")
 
     print('\n\nThe problem came after probability calculation\n')
     
@@ -145,13 +143,30 @@ def generate_mutation_code(prefix):
   
   return(mutation_code, residue_numbers[site])
   
-def calc_prob(data, alpha):
-    ddG = float(data[1]) - float(data[0])
-    if ddG <= 0.0:
-      return((ddG, 1.0))
-    else:
-      #Adjust this alpha parameter to narrow the distribution of accepted changes
-      return((ddG, math.exp(-alpha*ddG)))
+def calc_prob(stab1, stab2, binding, N, beta, threshold):
+  '''In other to use this function, you need to provide a number of parameters.
+     The stab1, stab2, and binding data should be coming from the foldx values
+     and they need to be ABSOLUTE energy not differences.  The N, beta and 
+     threshold numbers need to specified for the theoretical population size,
+     the beta distribution constant, and the soft threshold for survival.  
+     At this point, the function cannot be used if binding on both chains is
+     not desired.'''
+
+  mutant = [stab1[1], stab2[1], binding[1]]
+  origin = [stab1[0], stab2[0], binding[0]]
+
+  if sum([x<=y for x, y in zip(mutant, origin)]) == len(mutant):
+    return((ddG, 1.0))
+  else:
+    xi = 
+    return(( ddG, math.exp(-2 * N * (calc_x(mutant, beta, threshold) - calc_x(origin, beta, threshold))) ))
+
+def calc_x(data, beta, threshold):
+  total = 0
+  for i in data:
+    total += -math.log(math.exp(beta * (i - threshold)) + 1)
+
+  return(total)
       
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
