@@ -77,7 +77,7 @@ def main():
     
     if both:
       #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
-      probability = calc_prob(stab1, stab2, binding, 10000, 1, -10)[1]
+      probability = calc_prob(stab1, stab2, binding, 10000, 1, -10)
     else:
       raise Exception("We're not doing both.")
 
@@ -153,18 +153,18 @@ def calc_prob(stab1, stab2, binding, N, beta, threshold):
      At this point, the function cannot be used if binding on both chains is
      not desired.'''
 
-  mutant = [stab1[1], stab2[1], binding[1]]
-  origin = [stab1[0], stab2[0], binding[0]]
+  mutant = [float(stab1[1]), float(stab2[1]), float(binding[1])]
+  origin = [float(stab1[0]), float(stab2[0]), float(binding[0])]
 
   if sum([x<=y for x, y in zip(mutant, origin)]) == len(mutant):
-    return((ddG, 1.0))
+    return((1.0))
   else:
-    return(( ddG, math.exp(-2 * N * (calc_x(mutant, beta, threshold) - calc_x(origin, beta, threshold))) ))
+    return((math.exp(-2 * float(N) * (calc_x(mutant, beta, threshold) - calc_x(origin, beta, threshold))) ))
 
 def calc_x(data, beta, threshold):
   total = 0
   for i in data:
-    total += -math.log(math.exp(beta * (i - threshold)) + 1)
+    total += -math.log(math.exp(float(beta) * (float(i) - float(threshold))) + 1)
 
   return(total)
       
