@@ -78,7 +78,7 @@ def main():
     
     if both:
       #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
-      probability = calc_prob(stab1, stab2, binding, 10000, 1, thresholds)
+      probability = calc_prob(stab1, stab2, binding, 10000, 0.5, thresholds)
     else:
       raise Exception("We're not doing both?")
     
