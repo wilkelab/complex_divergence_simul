@@ -5,9 +5,17 @@ from Bio import *
 import Bio.PDB as PDB
 
 def main():
-  prefix = '2eke'
+
+  args =  sys.argv
+  prefix          = args[1]
+  population_size = float(args[2])
+  beta            = float(args[3])
+  dGt1            = float(args[4])
+  dGt2            = float(args[5])
+  dGt3            = float(args[6])
+  out_file        = args[7]
       
-  output = open('data.txt', 'w')
+  output = open(out_file, 'w')
   to_file = 'mutant\tcount\tbinding\tstability1\tstability2\tprobability'
   output.write(to_file)
   output.close()
@@ -74,11 +82,11 @@ def main():
     stab1 = [score_ob.getStability1()[0], score_ob.getStability2()[0]]
     stab2 = [score_ob.getStability1()[1], score_ob.getStability2()[1]]
     binding = score_ob.getInteractionEnergies()
-    thresholds = [-19.7, -4.2, -10]
+    thresholds = [dGt1, dGt2, dGt3]
     
     if both:
       #To this function you need 6 variables: stab1, stab2, binding, N, beta, and threshold
-      probability = calc_prob(stab1, stab2, binding, 10000, 0.00023, thresholds)
+      probability = calc_prob(stab1, stab2, binding, population_size, beta, thresholds)
     else:
       raise Exception("We're not doing both?")
     
