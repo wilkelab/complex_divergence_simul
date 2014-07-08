@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N AV
+#$ -N B_1000
 #$ -e error_file
 #$ -o out_file
 #$ -S /bin/bash
@@ -10,11 +10,6 @@ CDIR=/state/partition1/$USER
 RDIR=/share/WilkeLab/work/agm854/Results/$JOB_NAME-$JOB_ID
 
 FDIR=`pwd`
-
-if [ -d $CDIR ]
-then
-  rm -r $CDIR
-fi
 
 mkdir -p $WDIR
 
