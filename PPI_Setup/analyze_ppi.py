@@ -18,7 +18,7 @@ def main():
 
   for a_line in all_lines:
     split = a_line.split('\t')
-    if split[0] == 'mutant':
+    if len(split) == 1:
       continue
     else:
       if int(split[0][1:-5]) <= 156:
@@ -75,7 +75,7 @@ def main():
         continue
 
     output = open('ancestral_comparisons.txt', 'a')
-    to_file = a_mutant[0] + '_' + a_mutant[6] +'\t' + a_mutant[1] + '\t' + a_mutant[2] + '\t' + '\t' + str(inter) + '\t' + str(stab) + '\n'
+    to_file = a_mutant[0] + '_' + a_mutant[6] +'\t' + a_mutant[1] + '\t' + a_mutant[2] + '\t' + str(inter) + '\t' + str(stab) + '\n'
     output.write(to_file)
     output.close()
 
