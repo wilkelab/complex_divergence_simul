@@ -36,13 +36,13 @@ def main():
   foldx.runFoldxRepair(prefix, [prefix + '.bak'])
   score_ob = foldx.Scores()
   score_ob.cleanUp([])
-  repair_file = glob.glob('RepairPDB_*pdb')
+  repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
   if len(repair_file) == 1:
     shutil.move(repair_file[0], prefix + '.pdb')
   else:
     raise Exception('No output from RepairPDB.')
 
-  for i in range(0, 1000):
+  for i in range(0, 10):
     sys.stdout.flush()
     
     #Make sure the pdb exists
@@ -55,15 +55,13 @@ def main():
 
     (mutation_code, site) = generate_mutation_code(prefix)
     foldx.runFoldxSimpleMutator(mutation_code, [prefix + '.pdb'])
-    proceed = foldx.checkOutputMutator(prefix)
 
-    #See if we got the files we needed from the mutator
-    if not proceed:
-      score_ob = foldx.Scores()
-      score_ob.cleanUp(['*_*.pdb', '*energies*'])
-      continue
-      
     (new_mutant_name, old_mutant_name) = recode_mutant_pdb(mutation_code, site, prefix)
+
+    foldx.runFoldxRepair(new_mutant_name[0:-4], [new_mutant_name])
+    repair_file = glob.glob('RepairPDB_' + new_mutant_name[0:-4] + '*.pdb')
+    shutil.move(repair_file[0], new_mutant_name)
+      
     foldx.runFoldxAnalyzeComplex(new_mutant_name[0:-4] + '_complex', [old_mutant_name, new_mutant_name])
     proceed = foldx.checkOutputAnalyzeComplex(new_mutant_name[0:-4])
 
@@ -100,8 +98,8 @@ def main():
 
     if random.random() < probability:
       print('\n\nPassing to the next round...\n')
-      score_ob.cleanUp(['*energies*'])
-      output = open('data.txt', 'a')
+      score_ob.cleanUp(['*energies*', 'WT_*'])
+      output = open(out_file, 'a')
       to_file = '\n' + str(ids[1]) + '\t' + str(count) + '\t' + str(binding[1]) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(probability)
       output.write(to_file)
       output.close()
@@ -194,18 +192,9 @@ def safe_calc(exponent):
       
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
-  
-  files = glob.glob('*_' + prefix + '.pdb')
 
-  for a_file in files:
-    if foldx.rev_resdict[recoded_mutant[0]] in a_file:
-      shutil.move(a_file, recoded_mutant + '.wt.pdb')
-
-      #This line makes it so the energy is evaluated relative to the last best mutant
-      #Comment the line out if you want to evaluate the energy versus the repositioned WT output from positionscan
-      shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')
-    else:
-      shutil.move(a_file, recoded_mutant + '.pdb')
+  shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')
+  shutil.move(prefix + '_1.pdb', recoded_mutant + '.pdb')
 
   return(recoded_mutant + '.pdb', recoded_mutant + '.wt.pdb')
 

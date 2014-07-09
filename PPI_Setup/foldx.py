@@ -81,7 +81,7 @@ def runFoldxSimpleMutator(mutant, pdbs):
   output.close()
   
   name = 'run_' + str(mutant) + '.foldx'
-  makeFoldxPositionScan(mutant, name, 'true')
+  makeFoldxBuildModel(mutant, name, 'true')
   command = '/home/agm854/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:
@@ -356,7 +356,7 @@ class Scores:
     for files in glob.glob('run_*.foldx'):
       if os.path.isfile(files):
         os.remove(files)
-    for files in glob.glob('*fxout'):
+    for files in glob.glob('*out'):
       if os.path.isfile(files):
         os.remove(files)
     if os.path.isfile('missing.txt'): 
