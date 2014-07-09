@@ -6,7 +6,7 @@ from Bio import *
 import Bio.PDB as PDB
 
 def main():
-  start_structure = '2eke.bak'
+  start_structure = '2eke.pdb'
 
   ancestral_structure1 = capture_pdb(start_structure[0:-4] + '_A.pdb', start_structure, 'A')
   ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')

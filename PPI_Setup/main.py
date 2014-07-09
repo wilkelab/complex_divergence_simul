@@ -42,7 +42,7 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
-  for i in range(0, 10):
+  for i in range(0, 1000):
     sys.stdout.flush()
     
     #Make sure the pdb exists
