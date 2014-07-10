@@ -195,6 +195,11 @@ def recode_mutant_pdb(mutation_code, site, prefix):
 
   shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')  
   shutil.move(foldx.rev_resdict[mutation_code[-1]] + site + '_' + prefix + '.pdb', recoded_mutant + '.pdb')
+  
+  #Remove the unused file that is output from position scan
+  old_files = glob.glob('*_' + prefix + '.pdb')
+  for a_file in old_file:
+    os.remove(a_file)
 
   return(recoded_mutant + '.pdb', recoded_mutant + '.wt.pdb')
 
