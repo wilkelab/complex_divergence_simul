@@ -6,19 +6,21 @@ from Bio import *
 import Bio.PDB as PDB
 
 def main():
-  start_structure = '2eke.pdb'
+  args            =  sys.argv
+  in_file         = args[1]
+  start_structure = args[2]
 
   ancestral_structure1 = capture_pdb(start_structure[0:-4] + '_A.pdb', start_structure, 'A')
   ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')
 
   #make_combined_file([ancestral_structure1, ancestral_structure2], start_structure[0:-4] + '_combined.pdb')
   
-  all_lines = (open('data.txt', 'r')).readlines()
+  all_lines = (open(in_file, 'r')).readlines()
   all_data = []
 
   for a_line in all_lines:
     split = a_line.split('\t')
-    if len(split) == 1:
+    if split[0] == 'mutant':
       continue
     else:
       if int(split[0][1:-5]) <= 156:
