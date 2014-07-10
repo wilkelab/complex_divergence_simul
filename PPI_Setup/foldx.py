@@ -63,7 +63,7 @@ def makeFoldxPositionScan(mutant, name, output_pdb):
             '<metal>-CRYSTAL;\n'+\
             '<VdWDesign>2;\n'+\
             '<OutPDB>' + output_pdb + ';\n'+\
-            '<pdb_hydrogens>;\n'+\
+            '<pdb_hydrogens>false;\n'+\
             '<END>#;\n'+\
             '<JOBEND>#;\n'+\
             '<ENDFILE>#;\n'
@@ -81,7 +81,7 @@ def runFoldxSimpleMutator(mutant, pdbs):
   output.close()
   
   name = 'run_' + str(mutant) + '.foldx'
-  makeFoldxBuildModel(mutant, name, 'true')
+  makeFoldxPositionScan(mutant, name, 'true')
   command = '/home/agm854/local/bin/foldx64Linux -runfile ' + name
   status = -1
   while status < 0:

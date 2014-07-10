@@ -33,14 +33,14 @@ def main():
   both = True
   one = True
 
-  foldx.runFoldxRepair(prefix, [prefix + '.bak'])
-  score_ob = foldx.Scores()
-  score_ob.cleanUp([])
-  repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
-  if len(repair_file) == 1:
-    shutil.move(repair_file[0], prefix + '.pdb')
-  else:
-    raise Exception('No output from RepairPDB.')
+#  foldx.runFoldxRepair(prefix, [prefix + '.bak'])
+#  score_ob = foldx.Scores()
+#  score_ob.cleanUp([])
+#  repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
+#  if len(repair_file) == 1:
+#    shutil.move(repair_file[0], prefix + '.pdb')
+#  else:
+#    raise Exception('No output from RepairPDB.')
 
   for i in range(0, 1000):
     sys.stdout.flush()
@@ -193,8 +193,8 @@ def safe_calc(exponent):
 def recode_mutant_pdb(mutation_code, site, prefix):
   recoded_mutant = mutation_code[0] + site + mutation_code[-1]
 
-  shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')
-  shutil.move(prefix + '_1.pdb', recoded_mutant + '.pdb')
+  shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')  
+  shutil.move(foldx.rev_resdict[mutation_code[-1]] + site + '_' + prefix + '.pdb', recoded_mutant + '.pdb')
 
   return(recoded_mutant + '.pdb', recoded_mutant + '.wt.pdb')
 
