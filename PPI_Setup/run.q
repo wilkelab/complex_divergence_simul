@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N B_1000
+#$ -N B6_1k_9999B
 #$ -e error_file
 #$ -o out_file
 #$ -S /bin/bash
@@ -24,7 +24,7 @@ cd $WDIR
 cp $FDIR/* .
 
 # Command to run
-/share/apps/python-2.7.2/bin/python main.py 2eke 1000 10 -23 -5.0 -9.7 final_data.txt 2> main.log 1> main.log
+/share/apps/python-2.7.2/bin/python main.py 2eke 1000 10 -23 -5.0 9999 final_data.txt 2> main.log 1> main.log
 
 # Copy Results Back to Home Directory
 mkdir -p $RDIR
