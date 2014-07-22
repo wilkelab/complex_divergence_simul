@@ -185,7 +185,7 @@ def calc_x(data, beta, thresholds):
   return(total)
 
 def safe_calc(exponent):
-  if exponent > 500:
+  if exponent > 700:
     return(sys.float_info.max)
   else:
     return(math.exp(exponent))
