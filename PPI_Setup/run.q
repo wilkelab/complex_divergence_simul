@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N B6_1k_9999B
+#$ -N UnB
 #$ -e error_file
 #$ -o out_file
 #$ -S /bin/bash
