@@ -1,9 +1,10 @@
 rm(list = ls())
 survival.value = -7
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
-get.data <- function(this.folder) {
+get.data <- function(this.folder, which.chain) {
   start <- this.folder
   dirs <- list.files(start)
   
@@ -19,8 +20,11 @@ get.data <- function(this.folder) {
   count <- 0
   
   for(i in dirs) {
-    dat<-read.table(paste(start, i, sep=''), sep='\t', header=T, stringsAsFactors=F);
+    dat <- read.table(paste(start, i, sep=''), sep='\t', header=T, stringsAsFactors=F);
     final.letters <- sapply(dat$name, last.letter)
+    dat <- dat[final.letters == which.chain, ] 
+    final.letters <- final.letters[final.letters == which.chain]
+    
     count <- count + 1
     
     ab.count <- append(ab.count, dat$count);
@@ -31,11 +35,12 @@ get.data <- function(this.folder) {
     chain <- append(chain, final.letters)
     replicate <- append(replicate, rep(as.character(count), length(final.letters)))
     survival.replicate <- append(survival.replicate, rep(count, 1000))
+    
     cutoff <- dat$count[min(which(dat$ancestral_interaction > survival.value))]
     cutoff[is.na(cutoff)] <- 1000
+    
     for(i in 1:1000){ if(i > cutoff) survival <- append(survival, 0) 
                       else survival <- append(survival, 1)}
-    
   }
   
   tmp.data <- data.frame(names=name, ab.count=ab.count, ev.binding=ev.binding, an.binding=an.binding, stab=stab, 
@@ -47,11 +52,11 @@ get.data <- function(this.folder) {
   
 }
 
-survival.data.B1 <- get.data('B1_ancest_data/')
-survival.data.B2 <- get.data('B2_ancest_data/')
-survival.data.B3 <- get.data('B3_ancest_data/')
-survival.data.B4 <- get.data('B4_ancest_data/')
-survival.data.UnB <- get.data('UnB_data/')
+survival.data.B1 <- get.data('B1_ancest_data/', this.chain)
+survival.data.B2 <- get.data('B2_ancest_data/', this.chain)
+survival.data.B3 <- get.data('B3_ancest_data/', this.chain)
+survival.data.B4 <- get.data('B4_ancest_data/', this.chain)
+survival.data.UnB <- get.data('UnB_data/', this.chain)
 
 survival.data <- data.frame(x=rep(1:1000, 5), y=c(survival.data.B1$y, survival.data.B2$y, survival.data.B3$y, survival.data.B4$y, survival.data.UnB$y), 
                             replicate=c(rep('b1',1000), rep('b2', 1000), rep('b3', 1000), rep('b4', 1000), rep('UnB', 1000)))
@@ -89,7 +94,7 @@ survival.lines <- function(df) {
   g <- g + theme(axis.ticks.margin = unit(0.25, "cm"))
   g <- g + theme(legend.position = "none")
   
-  ggsave(g, file='~/Desktop/survival.pdf', width=10, height=10)
+  ggsave(g, file=paste('~/Desktop/survival_', this.chain, '.pdf', sep=''), width=10, height=10)
   return(g)
 }
 
