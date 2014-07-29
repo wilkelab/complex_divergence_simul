@@ -31,7 +31,9 @@ get.data <- function(this.folder) {
     chain <- append(chain, final.letters)
     replicate <- append(replicate, rep(as.character(count), length(final.letters)))
     survival.replicate <- append(survival.replicate, rep(count, 1000))
-    for(i in 1:1000){ if(i > min(which(dat$ancestral_interaction > survival.value))) survival <- append(survival, 0) 
+    cutoff <- dat$count[min(which(dat$ancestral_interaction > survival.value))]
+    cutoff[is.na(cutoff)] <- 1000
+    for(i in 1:1000){ if(i > cutoff) survival <- append(survival, 0) 
                       else survival <- append(survival, 1)}
     
   }
@@ -74,7 +76,7 @@ survival.lines <- function(df) {
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Ancestral Binding')
   g <- g + xlab('Time (Mutations Attempted)')
-  g <- g + scale_x_continuous(breaks=seq(0, 1000, 25), limits=c(0, 150))
+  g <- g + scale_x_continuous(breaks=seq(0, 1000, 250), limits=c(0, 1000))
   #  g <- g + scale_y_continuous(breaks=seq(500, 1000, 100), limits=c(550, 900))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
