@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N UnB
+#$ -N UnS
 #$ -e error_file
 #$ -o out_file
 #$ -S /bin/bash
