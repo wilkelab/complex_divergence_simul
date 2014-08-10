@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -N UnS
+#$ -N WT
 #$ -e error_file
 #$ -o out_file
 #$ -S /bin/bash
