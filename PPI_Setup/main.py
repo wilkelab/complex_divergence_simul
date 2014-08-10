@@ -42,8 +42,6 @@ def main():
   else:
     raise Exception('No output from RepairPDB.')
 
-  output_dict = {}
-
   for i in range(0, 1000):
     sys.stdout.flush()
     
@@ -203,11 +201,6 @@ def recode_mutant_pdb(mutation_code, site, prefix):
 
   new_test = recoded_mutant + '.pdb'
   old_test = recoded_mutant + '.wt.pdb'
-  existing = glob.glob(recoded_mutant)
-
-  if len(existing)/2 > 0:
-    shutil.move(new_test, new_mutant_name[0:-4] + '_' + str(len(existing)/2) + '.pdb')
-    shutil.move(old_test, new_mutant_name[0:-4] + '_' + str(len(existing)/2) + '.wt.pdb')
   
   shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')  
   shutil.move(foldx.rev_resdict[mutation_code[-1]] + site + '_' + prefix + '.pdb', new_test)
