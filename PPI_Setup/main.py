@@ -33,14 +33,14 @@ def main():
   both = True
   one = True
 
-  #foldx.runFoldxRepair(prefix, [prefix + '.bak'])
-  #score_ob = foldx.Scores()
-  #score_ob.cleanUp([])
-  #repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
-  #if len(repair_file) == 1:
-  #  shutil.move(repair_file[0], prefix + '.pdb')
-  #else:
-  #  raise Exception('No output from RepairPDB.')
+  foldx.runFoldxRepair(prefix, [prefix + '.bak'])
+  score_ob = foldx.Scores()
+  score_ob.cleanUp([])
+  repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
+  if len(repair_file) == 1:
+    shutil.move(repair_file[0], prefix + '.pdb')
+  else:
+    raise Exception('No output from RepairPDB.')
 
   output_dict = {}
 
