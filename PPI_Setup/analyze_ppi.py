@@ -20,16 +20,16 @@ def main():
 
   for a_line in all_lines:
     split = a_line.split('\t')
-    if split[0] == 'mutant':
+    if split[0] == 'file':
       continue
     else:
-      if int(split[0][1:-5]) <= 156:
-        all_data.append([split[0], split[1], split[2], split[3], split[4], split[5], 'A'])
+      if int(split[1][1:-1]) <= 156:
+        all_data.append([split[0], split[1], split[2], split[3], split[4], split[5], split[6], 'A'])
       else:
-        all_data.append([split[0], split[1], split[2], split[3], split[4], split[5], 'C'])
+        all_data.append([split[0], split[1], split[2], split[3], split[4], split[5], split[6], 'C'])
 
   output = open('ancestral_comparisons.txt', 'w')
-  to_file = 'name\tcount\tevolved_interaction\tancestral_interaction\tstability\n'
+  to_file = 'name\tcount\tidentity\tevolved_interaction\tancestral_interaction\tstability\n'
   output.write(to_file)
   output.close()
 
@@ -40,8 +40,7 @@ def main():
 
     a_mutant = all_data[i]
 
-    if float(a_mutant[0][1:-5]) > 156 and i % interval == 0: 
-        ancestral_structure1 = capture_pdb(start_structure[0:-4] + '_A.pdb', start_structure, 'A')
+    if float(a_mutant[1][1:-1]) > 156 and i % interval == 0: 
         new_structure2 = capture_pdb(a_mutant[0][0:-4] + '_C.pdb', a_mutant[0], 'C')
         new_combo = new_structure2[0:-4] + '_combined.pdb'
         combined_file = make_combined_file([ancestral_structure1, new_structure2], new_combo)
@@ -53,10 +52,9 @@ def main():
         score_ob.parseAnalyzeComplex()
         inter = score_ob.getInteractionEnergies()[0]
         stab = score_ob.getStability1()[1]
-        print(stab)
+        identity = calc_identity(ancestral_structure2, new_structure2)
 
     elif i % interval == 0:
-        ancestral_structure2 = capture_pdb(start_structure[0:-4] + '_C.pdb', start_structure, 'C')
         new_structure1 = capture_pdb(a_mutant[0][0:-4] + '_A.pdb', a_mutant[0], 'A')
         new_combo = new_structure1[0:-4] + '_combined.pdb'
         combined_file = make_combined_file([new_structure1, ancestral_structure2], new_combo)
@@ -68,12 +66,13 @@ def main():
         score_ob.parseAnalyzeComplex()
         inter = score_ob.getInteractionEnergies()[0]
         stab = score_ob.getStability1()[0]
-        print(stab)
+        identity = calc_identity(ancestral_structure1, new_structure1)
+
     else:
         continue
 
     output = open('ancestral_comparisons.txt', 'a')
-    to_file = a_mutant[0] + '_' + a_mutant[6] +'\t' + a_mutant[1] + '\t' + a_mutant[2] + '\t' + str(inter) + '\t' + str(stab) + '\n'
+    to_file = a_mutant[1] + '_' + a_mutant[7] +'\t' + a_mutant[2] + '\t' + str(identity) + '\t' + a_mutant[5] + '\t' + str(inter) + '\t' + str(stab) + '\n'
     output.write(to_file)
     output.close()
 
