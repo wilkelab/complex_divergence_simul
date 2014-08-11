@@ -3,20 +3,21 @@ from Bio.PDB import *
 import numpy as np
 
 def main(): 
-    if len( sys.argv ) != 5:
+    if len( sys.argv ) != 4:
         print '''
 
         You don't have the right number of arguments.
 
         Input line should resemble:
-        python calculate_distance.py pdb_file_name chain distance_cutoff fixed_mutation_file
+        python calculate_distance.py chain distance_cutoff fixed_mutation_file
 
         '''
-    elif len( sys.argv ) ==  5:
-        pdb             = str(sys.argv[1])
-        chain           = str(sys.argv[2])
-        distance_cutoff = float(sys.argv[3])
-        file_name       = str(sys.argv[4])
+    elif len( sys.argv ) ==  4:
+        chain           = str(sys.argv[1])
+        distance_cutoff = float(sys.argv[2])
+        file_name       = str(sys.argv[3])
+
+        pdb = get_final_pdb(file_name)
 
         p = PDBParser(QUIET=True)
         structure = p.get_structure(pdb[0:-4], pdb)
@@ -29,6 +30,20 @@ def main():
 
         print(calculate_fraction_interface(interface_sites, mutation_sites))
     
+def get_final_pdb(file_name):
+    '''This function has one input.
+       1.) A file name in String format for the fixed mutation data from main.py
+           Traditionally this file is named final_data.txt, but 
+           could be anything the simulator used
+
+       This function will return one output.
+       1.) The name of the final pdb structure
+    '''
+
+    in_file = open(file_name, 'r')
+
+    return(in_file.readlines()[-1].split('\t')[0])
+
 def calculate_ca_distance(structure, test_chain):
     '''This function has two inputs.  
        1.) A structure object from the biopython parser.
@@ -59,7 +74,7 @@ def find_mutation_sites(file_name):
     '''This function has one input.
        1.) A file name in String format for the fixed mutation data from main.py
            Traditionally this file is named final_data.txt, but 
-           could be anything the simulator used.
+           could be anything the simulator used
 
        This function will return one output.
        1.) A list of integers of the sites where mutations fixed
