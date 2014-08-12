@@ -19,16 +19,19 @@ def main():
 
         pdb = get_final_pdb(file_name)
 
-        p = PDBParser(QUIET=True)
+        p = PDBParser()
         structure = p.get_structure(pdb[0:-4], pdb)
     
         distances = calculate_ca_distance(structure, chain)
         mutation_sites = find_mutation_sites(file_name)
-        interface_sites = distances[distances[:, 1] < distance_cutoff][:, 0]
+        interface_sites = distances[distances[:, 1] <= distance_cutoff][:, 0]
+        non_interface_sites = distances[distances[:, 1] > distance_cutoff][:, 0]
         
-        print(interface_sites)
+        #print(interface_sites)
 
-        print(calculate_fraction_interface(interface_sites, mutation_sites))
+        interface_fraction, non_interface_fraction = calculate_fraction_interface(interface_sites, mutation_sites, len(non_interface_sites))
+
+        print(str(interface_fraction) + '\t' + str(non_interface_fraction))
     
 def get_final_pdb(file_name):
     '''This function has one input.
@@ -86,31 +89,34 @@ def find_mutation_sites(file_name):
 
     for a_line in in_file.readlines():
         split = a_line.split('\t')
-        if split[0] == 'file':
+        if split[0] == 'mutant':
             continue
         else:
-            mutation_sites.append(int(split[1][1:-1]))
+            mutation_sites.append(int(split[0][1:-5]))
 
     return(mutation_sites)
 
-def calculate_fraction_interface(interface_sites, mutation_sites):
+def calculate_fraction_interface(interface_sites, mutation_sites, non_interface_sites):
     '''This function has two inputs.
        1.) A list of the interface sites in Integer format
        2.) A list of mutation sites in Integer Format
+       3.) Sequence length of the chain of interest
 
-       This function has one output.
-       1.) A float that is the fraction of mutations in the interface
+       This function has two outputs.
+       1.) A float that is the fraction of interface mutations per interface site
+       2.) A float that is the fraction of non-interface mutations per non-interface site
     '''
     
     interface_count = 0
-    mutation_count  = 0
+    non_interface_count  = 0
 
     for mutation_site in mutation_sites:
         if mutation_site in interface_sites:
             interface_count += 1
-        mutation_count += 1
+        else:
+            non_interface_count += 1
 
-    return(float(interface_count)/mutation_count)
+    return([float(interface_count)/len(interface_sites), float(non_interface_count)/non_interface_sites])
         
 
 if __name__ == "__main__":

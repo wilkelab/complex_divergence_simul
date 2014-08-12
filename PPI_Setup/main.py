@@ -184,7 +184,7 @@ def calc_prob(stab1, stab2, binding, N, beta, thresholds):
 
 def calc_x(data, beta, thresholds):
   total = 0
-  for i in range(0, len(data)):
+  for i in range(0, len(data)-1):
     #Need to make sure you check numbers that are too big for the math library
     exponent = float(beta) * (float(data[i]) - float(thresholds[i]))
 
