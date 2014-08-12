@@ -1,7 +1,11 @@
+require(splines)
+
 rm(list = ls())
 this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
+
+me <- function(some.dat){quantile(some.dat, c(alpha, 1-alpha))}
 
 get.data <- function(this.folder, which.chain) {
   start <- this.folder
@@ -42,12 +46,43 @@ get.data <- function(this.folder, which.chain) {
   
 }
 
-survival.data.WT <- get.data('~/Desktop/WT_data/', this.chain)
+survival.data.WT <- get.data('~/Desktop/WT_data_new/', this.chain)
 
 plot.data <- data.frame(x=rep(survival.data.WT$identity, 2), 
                         y=c(survival.data.WT$ev.binding, survival.data.WT$an.binding), 
                         id=c(rep('Evolved', dim(survival.data.WT)[1]), rep('Ancestral', dim(survival.data.WT)[1]))
 )
+
+plot.data <- plot.data[order(plot.data$x), ]
+
+plot.data.ancestral <- plot.data[plot.data$id == 'Ancestral', ]
+
+degree.freedom <- 3
+
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral)
+
+for (tau in c(0.1, 0.5, 0.9)) {
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral)
+  y.fit.ancestral <- X %*% fit$coef
+  plot.data.ancestral <- cbind(plot.data.ancestral, y.fit.ancestral)
+}
+
+plot.data.evolved <- plot.data[plot.data$id == 'Evolved', ]
+
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved)
+
+for (tau in c(0.1, 0.5, 0.9)) {
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved)
+  y.fit.evolved <- X %*% fit$coef
+  plot.data.evolved <- cbind(plot.data.evolved, y.fit.evolved)
+}
+
+plot.data <- data.frame(x=c(plot.data.ancestral$x, plot.data.evolved$x),
+                        y=c(plot.data.ancestral$y, plot.data.evolved$y),
+                        ysmooth=c(plot.data.ancestral[, 5], plot.data.evolved[, 5]),
+                        ymin=c(plot.data.ancestral[, 4], plot.data.evolved[, 4]),
+                        ymax=c(plot.data.ancestral[, 6], plot.data.evolved[, 6]),
+                        id=c(rep('Ancestral', length(plot.data.ancestral$x)), rep('Evolved', length(plot.data.evolved$x))))
 
 survival.lines <- function(df) {
   require(ggplot2)
@@ -64,12 +99,12 @@ survival.lines <- function(df) {
                             panel.border=element_blank(),
                             axis.line=element_line())
   
-  g <- ggplot(df, aes(x=x, y=y, color=id)) + geom_point(size=2.5)
+  g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + geom_point() + geom_line(aes(y=ysmooth)) + geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Binding Energy')
   g <- g + xlab('Identity (%)')
   g <- g + scale_x_reverse(breaks=seq(1, 0, -0.1), limits=c(1, 0))
-  g <- g + scale_y_continuous(breaks=seq(-16., 0., 2.), limits=c(-15., 0.))
+  g <- g + scale_y_continuous(breaks=seq(-16., 0., 2.), limits=c(-13., 0.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
