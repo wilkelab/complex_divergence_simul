@@ -47,7 +47,7 @@ survival.data.WT <- get.data('~/Desktop/WT_data/', this.chain)
 plot.data <- data.frame(x=rep(survival.data.WT$identity, 2), 
                         y=c(survival.data.WT$ev.binding, survival.data.WT$an.binding), 
                         id=c(rep('Evolved', dim(survival.data.WT)[1]), rep('Ancestral', dim(survival.data.WT)[1]))
-                        )
+)
 
 survival.lines <- function(df) {
   require(ggplot2)
@@ -66,10 +66,10 @@ survival.lines <- function(df) {
   
   g <- ggplot(df, aes(x=x, y=y, color=id)) + geom_point(size=2.5)
   g <- g + theme(strip.background=element_blank())
-  g <- g + ylab('Ancestral Binding')
+  g <- g + ylab('Binding Energy')
   g <- g + xlab('Identity (%)')
   g <- g + scale_x_reverse(breaks=seq(1, 0, -0.1), limits=c(1, 0))
-  g <- g + scale_y_continuous(breaks=seq(-15., 0., 1.), limits=c(-15., 0.))
+  g <- g + scale_y_continuous(breaks=seq(-16., 0., 2.), limits=c(-15., 0.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
@@ -79,7 +79,11 @@ survival.lines <- function(df) {
   g <- g + theme(axis.ticks = element_line(colour = 'black', size = 1))
   g <- g + theme(plot.margin=unit(c(1.5, 1.5, 1.5, 1.5), "lines"))
   g <- g + theme(axis.ticks.margin = unit(0.25, "cm"))
-  g <- g + theme(legend.position = "none")
+  g <- g + theme(legend.position = c(0.75, 0.9),
+                 legend.title=element_blank(), 
+                 legend.key = element_blank(), 
+                 legend.text=element_text(size=22),
+                 legend.key.size = unit(1, "cm"))
   
   ggsave(g, file=paste('~/Desktop/identity_v_binding', this.chain, '.pdf', sep=''), width=10, height=10)
   return(g)
