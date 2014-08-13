@@ -1,7 +1,8 @@
 require(splines)
+require(quantreg)
 
 rm(list = ls())
-this.chain = "A"
+this.chain = "C"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -61,7 +62,7 @@ degree.freedom <- 3
 
 X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral)
 
-for (tau in c(0.1, 0.5, 0.9)) {
+for (tau in c(0.25, 0.5, 0.75)) {
   fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral)
   y.fit.ancestral <- X %*% fit$coef
   plot.data.ancestral <- cbind(plot.data.ancestral, y.fit.ancestral)
@@ -71,7 +72,7 @@ plot.data.evolved <- plot.data[plot.data$id == 'Evolved', ]
 
 X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved)
 
-for (tau in c(0.1, 0.5, 0.9)) {
+for (tau in c(0.25, 0.5, 0.75)) {
   fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved)
   y.fit.evolved <- X %*% fit$coef
   plot.data.evolved <- cbind(plot.data.evolved, y.fit.evolved)
@@ -99,12 +100,12 @@ survival.lines <- function(df) {
                             panel.border=element_blank(),
                             axis.line=element_line())
   
-  g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + geom_point() + geom_line(aes(y=ysmooth)) + geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
+  g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + geom_point(size=1.4) + geom_line(aes(y=ysmooth), size=1.4) + geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Binding Energy')
   g <- g + xlab('Identity (%)')
   g <- g + scale_x_reverse(breaks=seq(1, 0, -0.1), limits=c(1, 0))
-  g <- g + scale_y_continuous(breaks=seq(-16., 0., 2.), limits=c(-13., 0.))
+  g <- g + scale_y_continuous(breaks=seq(-16., 0., 2.), limits=c(-14., 0.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
