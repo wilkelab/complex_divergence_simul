@@ -2,7 +2,8 @@ require(splines)
 require(quantreg)
 
 rm(list = ls())
-this.chain = "C"
+this.chain = "A"
+alpha = 0.05/2
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -62,7 +63,7 @@ degree.freedom <- 3
 
 X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral)
 
-for (tau in c(0.25, 0.5, 0.75)) {
+for (tau in c(alpha, 0.5, 1-alpha)) {
   fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral)
   y.fit.ancestral <- X %*% fit$coef
   plot.data.ancestral <- cbind(plot.data.ancestral, y.fit.ancestral)
@@ -72,7 +73,7 @@ plot.data.evolved <- plot.data[plot.data$id == 'Evolved', ]
 
 X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved)
 
-for (tau in c(0.25, 0.5, 0.75)) {
+for (tau in c(alpha, 0.5, 1-alpha)) {
   fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved)
   y.fit.evolved <- X %*% fit$coef
   plot.data.evolved <- cbind(plot.data.evolved, y.fit.evolved)
