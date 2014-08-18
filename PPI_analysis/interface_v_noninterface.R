@@ -7,7 +7,7 @@ last.letter <- function(this.string) {tmp.length <- nchar(this.string); substrin
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
 
-cbbPalette <- c('WT' = "#000000", 'UnB' = mycols[1], 'UnS' = mycols[2])
+cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[2])
 
 interface.plot <- function(df) {
   graphics.off()
@@ -52,11 +52,15 @@ WT <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/wt_inte
 UnB <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/unb_interface.dat', header=T)
 UnS <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/uns_interface.dat', header=T)
 
-plot.data <- data.frame(id=c(rep('WT', length(WT$interface)), 
-                             rep('UnB', length(UnB$interface)), 
-                             rep('UnS', length(UnS$interface))), 
+plot.data <- data.frame(id=c(rep('Wild Type', length(WT$interface)), 
+                             rep('Non-Bound', length(UnB$interface)), 
+                             rep('Low Stability', length(UnS$interface))), 
                         int.frac=c(WT$non_interface/WT$interface, 
                                    UnB$non_interface/UnB$interface, 
                                    UnS$non_interface/UnS$interface))
+
+##Put in levels so the legend is in the right order
+plot.data$id <- factor(plot.data$id, levels = c('Wild Type', 'Low Stability', 'Non-Bound'))
+
 
 interface.plot(plot.data)

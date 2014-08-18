@@ -2,7 +2,7 @@ require(splines)
 require(quantreg)
 
 rm(list = ls())
-this.chain = "C"
+this.chain = "A"
 alpha = 0.318/2
 
 ##Determine the last letter because that's where the chain is encoded
@@ -180,12 +180,13 @@ survival.lines <- function(df) {
   
   g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + 
     geom_line(aes(y=ysmooth), size=1.4) + 
-    geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
+    #geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
+    geom_point(alpha=0.2, size=1.5)
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Binding Energy')
   g <- g + xlab('Time (Mutations Attempted)')
   g <- g + scale_x_continuous(breaks=seq(0, 1000, 100), limits=c(0, 1000))
-  g <- g + scale_y_continuous(breaks=seq(-16., 16., 4.), limits=c(-14., 8.))
+  g <- g + scale_y_continuous(breaks=seq(-16., 16., 4.), limits=c(-16., 12.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
@@ -195,7 +196,7 @@ survival.lines <- function(df) {
   g <- g + theme(axis.ticks = element_line(colour = 'black', size = 1))
   g <- g + theme(plot.margin=unit(c(1.5, 1.5, 1.5, 1.5), "lines"))
   g <- g + theme(axis.ticks.margin = unit(0.25, "cm"))
-  g <- g + theme(legend.position = c(0.75, 0.9),
+  g <- g + theme(legend.position = c(0.25, 0.9),
                  legend.title=element_blank(), 
                  legend.key = element_blank(), 
                  legend.text=element_text(size=22),

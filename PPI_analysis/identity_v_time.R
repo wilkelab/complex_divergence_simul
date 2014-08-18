@@ -3,7 +3,7 @@ require(ggplot2)
 require(grid)
 require(latticeExtra)
 
-this.chain = "C"
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -48,7 +48,7 @@ get.data <- function(this.folder, which.chain) {
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
 
-cbbPalette <- c('WT' = "#000000", 'UnB' = mycols[1], 'UnS' = mycols[2])
+cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[2])
 
 identity.plot <- function(df, name) {
   graphics.off()
@@ -97,10 +97,13 @@ UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 
 plot.data <- data.frame(x=c(WT$ab.count, UnB$ab.count, UnS$ab.count),
                         y=c(WT$identity, UnB$identity, UnS$identity),
-                        set=c(rep('WT', length(WT$identity)), 
-                              rep('UnB', length(UnB$identity)), 
-                              rep('UnS', length(UnS$identity))
+                        set=c(rep('Wild Type', length(WT$identity)), 
+                              rep('Non-Bound', length(UnB$identity)), 
+                              rep('Low Stability', length(UnS$identity))
                               )
                         )
+
+##Put in levels so the legend is in the right order
+plot.data$set <- factor(plot.data$set, levels = c('Wild Type', 'Low Stability', 'Non-Bound'))
 
 identity.plot(plot.data, this.chain)
