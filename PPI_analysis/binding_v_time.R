@@ -184,9 +184,9 @@ survival.lines <- function(df) {
                             axis.line=element_line())
   
   g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + 
-    geom_line(aes(y=ysmooth), size=1.4) + 
     #geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
     geom_point(alpha=0.2, size=1.5) +
+    geom_line(aes(y=ysmooth), size=1.4) + 
     scale_colour_manual(values=cbbPalette) + 
     scale_fill_manual(values=cbbPalette)
   g <- g + theme(strip.background=element_blank())
