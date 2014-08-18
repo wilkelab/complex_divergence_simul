@@ -28,7 +28,7 @@ interface.plot <- function(df) {
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Probability Density')
   g <- g + xlab('Odds of accepting Non-interface to Interface Mutations')
-  g <- g + scale_x_continuous(breaks=seq(0, 6, 1), limits=c(0, 6))
+  g <- g + scale_x_continuous(breaks=seq(0, 7, 1), limits=c(0, 7))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
@@ -44,15 +44,19 @@ interface.plot <- function(df) {
                  legend.text=element_text(size=22),
                  legend.key.size = unit(1, "cm"))
   
-  ggsave(g, file=paste('~/Desktop/interfacial.pdf', sep=''), width=12, height=10)
+  ggsave(g, file=paste('~/Sandbox/complex_divergence_simul/figures/interface_odds.pdf', sep=''), width=12, height=10)
   return(g)
 }
 
-WT <- read.table('~/Desktop/WT_Interface.txt', header=T)
-UnB <- read.table('~/Desktop/UnB_Interface.txt', header=T)
-UnS <- read.table('~/Desktop/UnS_Interface.txt', header=T)
+WT <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/wt_interface.dat', header=T)
+UnB <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/unb_interface.dat', header=T)
+UnS <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/uns_interface.dat', header=T)
 
-plot.data <- data.frame(id=c(rep('WT', length(WT$interface)), rep('UnB', length(UnB$interface)), rep('UnS', length(UnS$interface))), 
-                        int.frac=c(WT$non_interface/WT$interface, UnB$non_interface/UnB$interface, UnS$non_interface/UnS$interface))
+plot.data <- data.frame(id=c(rep('WT', length(WT$interface)), 
+                             rep('UnB', length(UnB$interface)), 
+                             rep('UnS', length(UnS$interface))), 
+                        int.frac=c(WT$non_interface/WT$interface, 
+                                   UnB$non_interface/UnB$interface, 
+                                   UnS$non_interface/UnS$interface))
 
 interface.plot(plot.data)
