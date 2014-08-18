@@ -89,10 +89,10 @@ def find_mutation_sites(file_name):
 
     for a_line in in_file.readlines():
         split = a_line.split('\t')
-        if split[0] == 'mutant':
+        if split[0] == 'file':
             continue
         else:
-            mutation_sites.append(int(split[0][1:-5]))
+            mutation_sites.append(int(split[1][1:-1]))
 
     return(mutation_sites)
 
