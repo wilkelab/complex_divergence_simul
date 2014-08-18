@@ -1,8 +1,12 @@
 require(survival)
+require(latticeExtra)
 
 rm(list = ls())
+
+mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
+
 survival.value = -7
-this.chain = "A"
+this.chain = "C"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -42,12 +46,12 @@ get.data <- function(this.folder, which.chain) {
   return(tmp.survival.data)
 }
 
-survival.data.WT <- get.data('~/Desktop/WT_data/', this.chain)
-survival.data.UnB <- get.data('~/Desktop/UnS_data/', this.chain)
+survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
+survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 
 survival.data <- data.frame(time=c(survival.data.WT$survival.count, survival.data.UnB$survival.count), 
                             status=c(survival.data.WT$status.count, survival.data.UnB$status.count), 
-                            replicate=c(rep('WT', length(survival.data.WT$status.count)), rep('UnS', length(survival.data.UnB$status.count)))
+                            replicate=c(rep('WT', length(survival.data.WT$status.count)), rep('UnB', length(survival.data.UnB$status.count)))
 )
 
 #survival.data <- data.frame(time=c(survival.data.UnB$survival.count), 
@@ -58,30 +62,30 @@ survival.data <- data.frame(time=c(survival.data.WT$survival.count, survival.dat
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
-pdf(paste('~/Desktop/survival_', this.chain, '.pdf', sep=''), height=11, width=12)
+pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_', this.chain, '.pdf', sep=''), height=11, width=12)
 par(mar=c(5,5,1,2)+0.1)
 par(mgp=c(3, 1, 0))
 par(family = 'Helvetica')
 
 plot(fit, xlab="Time (Mutations Attempted)", 
      ylab="Survival Probability", 
-     col=c('red', 'blue'), 
-     cex.lab=1.75,
+     col=c(mycols[1], mycols[4]), 
+     cex.lab=2,
      mark=19,
      axes=F,
      xlim=c(0,1000),
-     lwd=1.5
+     lwd=2
 )
 
 axis( 1, 
       cex.axis=1.75,
       at = seq(0, 1000, 100),
-      lwd=1.5)
+      lwd=2)
 axis( 2, 
       cex.axis=1.75,
       #at = seq(0, 1, 0.1),
-      lwd=1.5)
+      lwd=2)
 
-legend( 0.1, 0.1, c('UnB', 'WT'), col=c('red', 'blue'), lty=1, cex=1.4, lwd=2)
+legend( 0.1, 0.1, c('UnB', 'WT'), col=c(mycols[1], mycols[4]), lty=1, cex=1.4, lwd=2)
 
 dev.off()
