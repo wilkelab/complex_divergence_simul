@@ -5,8 +5,8 @@ rm(list = ls())
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
 
-survival.value = -7
-this.chain = "C"
+survival.value = -7.5
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -46,18 +46,21 @@ get.data <- function(this.folder, which.chain) {
   return(tmp.survival.data)
 }
 
+##Get all of the data
 survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
 survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
+survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
 
-survival.data <- data.frame(time=c(survival.data.WT$survival.count, survival.data.UnB$survival.count), 
-                            status=c(survival.data.WT$status.count, survival.data.UnB$status.count), 
-                            replicate=c(rep('WT Survival', length(survival.data.WT$status.count)), rep('NonB Survival', length(survival.data.UnB$status.count)))
+survival.data <- data.frame(time=c(survival.data.WT$survival.count, 
+                                   survival.data.UnB$survival.count,
+                                   survival.data.UnS$survival.count), 
+                            status=c(survival.data.WT$status.count, 
+                                     survival.data.UnB$status.count,
+                                     survival.data.UnS$status.count), 
+                            replicate=c(rep('WT-Survival', length(survival.data.WT$status.count)), 
+                                        rep('NonB-Survival', length(survival.data.UnB$status.count)),
+                                        rep('LowS-Survival', length(survival.data.UnS$status.count)))
 )
-
-#survival.data <- data.frame(time=c(survival.data.UnB$survival.count), 
-#                            status=c(survival.data.UnB$status.count), 
-#                            replicate=c(rep('UnB', length(survival.data.UnB$status.count)))
-#)
 
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
@@ -69,7 +72,7 @@ par(family = 'Helvetica')
 
 plot(fit, xlab="Time (Mutations Attempted)", 
      ylab="Survival Probability", 
-     col=c(mycols[1], mycols[4]), 
+     col=c(mycols[1], mycols[4], mycols[2]), 
      cex.lab=2,
      mark=19,
      axes=F,
@@ -86,6 +89,6 @@ axis( 2,
       #at = seq(0, 1, 0.1),
       lwd=2)
 
-legend( 0.1, 0.1, c('NonB', 'WT'), col=c(mycols[1], mycols[4]), lty=1, cex=1.4, lwd=2.5, bty = "n")
+legend(650, 0.2, c('Low Stability', 'Non-Bound', 'Wild-Type'), col=c(mycols[1], mycols[4], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
 
 dev.off()
