@@ -2,7 +2,7 @@ require(splines)
 require(quantreg)
 
 rm(list = ls())
-this.chain = "A"
+this.chain = "C"
 alpha = 0.05/2
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
@@ -59,20 +59,20 @@ plot.data.ancestral.wt <- plot.data[plot.data$id == 'WT-Ancestral', ]
 
 degree.freedom <- 4
 
-X <- model.matrix(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), data=plot.data.ancestral.wt)
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral.wt)
 
 for (tau in c(alpha, 0.5, 1-alpha)) {
-  fit <- rq(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), tau=tau, data=plot.data.ancestral.wt)
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral.wt)
   y.fit.ancestral <- X %*% fit$coef
   plot.data.ancestral.wt <- cbind(plot.data.ancestral.wt, y.fit.ancestral)
 }
 
 plot.data.evolved.wt <- plot.data[plot.data$id == 'WT-Evolved', ]
 
-X <- model.matrix(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), data=plot.data.evolved.wt)
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved.wt)
 
 for (tau in c(alpha, 0.5, 1-alpha)) {
-  fit <- rq(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), tau=tau, data=plot.data.evolved.wt)
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved.wt)
   y.fit.evolved <- X %*% fit$coef
   plot.data.evolved.wt <- cbind(plot.data.evolved.wt, y.fit.evolved)
 }
@@ -82,20 +82,20 @@ plot.data.ancestral.nb <- plot.data[plot.data$id == 'NonB-Ancestral', ]
 
 degree.freedom <- 4
 
-X <- model.matrix(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), data=plot.data.ancestral.nb)
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral.nb)
 
 for (tau in c(alpha, 0.5, 1-alpha)) {
-  fit <- rq(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), tau=tau, data=plot.data.ancestral.nb)
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral.nb)
   y.fit.ancestral <- X %*% fit$coef
   plot.data.ancestral.nb <- cbind(plot.data.ancestral.nb, y.fit.ancestral)
 }
 
 plot.data.evolved.nb <- plot.data[plot.data$id == 'NonB-Evolved', ]
 
-X <- model.matrix(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), data=plot.data.evolved.nb)
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved.nb)
 
 for (tau in c(alpha, 0.5, 1-alpha)) {
-  fit <- rq(y ~ bs(x, df=degree.freedom, Boundary.knots=c(50, 950)), tau=tau, data=plot.data.evolved.nb)
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved.nb)
   y.fit.evolved <- X %*% fit$coef
   plot.data.evolved.nb <- cbind(plot.data.evolved.nb, y.fit.evolved)
 }

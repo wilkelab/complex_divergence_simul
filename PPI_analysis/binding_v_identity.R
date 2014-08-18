@@ -46,43 +46,70 @@ get.data <- function(this.folder, which.chain) {
   
 }
 
-survival.data.WT <- get.data('~/Desktop/WT_data_new/', this.chain)
+survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
+survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 
-plot.data <- data.frame(x=rep(survival.data.WT$identity, 2), 
-                        y=c(survival.data.WT$ev.binding, survival.data.WT$an.binding), 
-                        id=c(rep('Evolved', dim(survival.data.WT)[1]), rep('Ancestral', dim(survival.data.WT)[1]))
+plot.data <- data.frame(x=c(rep(survival.data.WT$identity, 2), rep(survival.data.UnB$identity, 2)), 
+                        y=c(survival.data.WT$ev.binding, survival.data.WT$an.binding, survival.data.UnB$ev.binding, survival.data.UnB$an.binding), 
+                        id=c(rep('WT-Evolved', dim(survival.data.WT)[1]), rep('WT-Ancestral', dim(survival.data.WT)[1]), rep('NonB-Evolved', dim(survival.data.UnB)[1]), rep('NonB-Ancestral', dim(survival.data.UnB)[1]))
 )
 
 plot.data <- plot.data[order(plot.data$x), ]
 
-plot.data.ancestral <- plot.data[plot.data$id == 'Ancestral', ]
+##Start of WT
+plot.data.ancestral.wt <- plot.data[plot.data$id == 'WT-Ancestral', ]
+
+degree.freedom <- 4
+high.knot <- 0.95
+low.knot <- 0.3
+
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral.wt)
+
+for (tau in c(alpha, 0.5, 1-alpha)) {
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral.wt)
+  y.fit.ancestral <- X %*% fit$coef
+  plot.data.ancestral.wt <- cbind(plot.data.ancestral.wt, y.fit.ancestral)
+}
+
+plot.data.evolved.wt <- plot.data[plot.data$id == 'WT-Evolved', ]
+
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved.wt)
+
+for (tau in c(alpha, 0.5, 1-alpha)) {
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved.wt)
+  y.fit.evolved <- X %*% fit$coef
+  plot.data.evolved.wt <- cbind(plot.data.evolved.wt, y.fit.evolved)
+}
+
+##Start of Non-Bound
+plot.data.ancestral.nb <- plot.data[plot.data$id == 'NonB-Ancestral', ]
 
 degree.freedom <- 4
 
-X <- model.matrix(y ~ bs(x, df=degree.freedom, Boundary.knots=c(0.4, 0.9)), data=plot.data.ancestral)
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral.nb)
 
 for (tau in c(alpha, 0.5, 1-alpha)) {
-  fit <- rq(y ~ bs(x, df=degree.freedom, Boundary.knots=c(0.4,0.9)), tau=tau, data=plot.data.ancestral)
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral.nb)
   y.fit.ancestral <- X %*% fit$coef
-  plot.data.ancestral <- cbind(plot.data.ancestral, y.fit.ancestral)
+  plot.data.ancestral.nb <- cbind(plot.data.ancestral.nb, y.fit.ancestral)
 }
 
-plot.data.evolved <- plot.data[plot.data$id == 'Evolved', ]
+plot.data.evolved.nb <- plot.data[plot.data$id == 'NonB-Evolved', ]
 
-X <- model.matrix(y ~ bs(x, df=degree.freedom, Boundary.knots=c(0.4, 0.9)), data=plot.data.evolved)
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved.nb)
 
 for (tau in c(alpha, 0.5, 1-alpha)) {
-  fit <- rq(y ~ bs(x, df=degree.freedom, Boundary.knots=c(0.4,0.9)), tau=tau, data=plot.data.evolved)
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved.nb)
   y.fit.evolved <- X %*% fit$coef
-  plot.data.evolved <- cbind(plot.data.evolved, y.fit.evolved)
+  plot.data.evolved.nb <- cbind(plot.data.evolved.nb, y.fit.evolved)
 }
 
-plot.data <- data.frame(x=c(plot.data.ancestral$x, plot.data.evolved$x),
-                        y=c(plot.data.ancestral$y, plot.data.evolved$y),
-                        ysmooth=c(plot.data.ancestral[, 5], plot.data.evolved[, 5]),
-                        ymin=c(plot.data.ancestral[, 4], plot.data.evolved[, 4]),
-                        ymax=c(plot.data.ancestral[, 6], plot.data.evolved[, 6]),
-                        id=c(rep('Ancestral', length(plot.data.ancestral$x)), rep('Evolved', length(plot.data.evolved$x))))
+plot.data <- data.frame(x=c(plot.data.ancestral.wt$x, plot.data.ancestral.nb$x),
+                        y=c(plot.data.ancestral.wt$y, plot.data.ancestral.nb$y),
+                        ysmooth=c(plot.data.ancestral.wt[, 5], plot.data.ancestral.nb[, 5]),
+                        ymin=c(plot.data.ancestral.wt[, 4], plot.data.ancestral.nb[, 4]),
+                        ymax=c(plot.data.ancestral.wt[, 6], plot.data.ancestral.nb[, 6]),
+                        id=c(rep('WT-Ancestral', length(plot.data.ancestral.wt$x)), rep('NonB-Ancestral', length(plot.data.ancestral.nb$x))))
 
 survival.lines <- function(df) {
   require(ggplot2)
@@ -99,12 +126,12 @@ survival.lines <- function(df) {
                             panel.border=element_blank(),
                             axis.line=element_line())
   
-  g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + geom_point(size=1.4) + geom_line(aes(y=ysmooth), size=1.4) + geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
+  g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + geom_line(aes(y=ysmooth), size=1.4) + geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Binding Energy')
   g <- g + xlab('Identity (%)')
   g <- g + scale_x_reverse(breaks=seq(1, 0, -0.1), limits=c(1, 0))
-  g <- g + scale_y_continuous(breaks=seq(-16., 0., 2.), limits=c(-14., 0.))
+  g <- g + scale_y_continuous(breaks=seq(-16., 16., 4.), limits=c(-16., 16.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
@@ -120,7 +147,7 @@ survival.lines <- function(df) {
                  legend.text=element_text(size=22),
                  legend.key.size = unit(1, "cm"))
   
-  ggsave(g, file=paste('~/Desktop/identity_v_binding', this.chain, '.pdf', sep=''), width=10, height=10)
+  ggsave(g, file=paste('~/Sandbox/complex_divergence_simul/figures/binding_v_identity_', this.chain, '.pdf', sep=''), width=10, height=10)
   return(g)
 }
 
