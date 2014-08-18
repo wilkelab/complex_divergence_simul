@@ -8,7 +8,7 @@ mycols <- c("#000000",mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "C"
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -89,6 +89,6 @@ axis( 2,
       cex.axis=2,
       lwd=2)
 
-legend(.70, 1, c('Wild-Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
+legend(.70, 1, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
 
 dev.off()
