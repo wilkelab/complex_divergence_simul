@@ -3,10 +3,12 @@ require(quantreg)
 
 rm(list = ls())
 this.chain = "A"
-alpha = 0.05/2
+alpha = 0.318/2
 
+##Determine the last letter because that's where the chain is encoded
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
+##Function that grabs the data from the files in the specified folder
 get.data <- function(this.folder, which.chain) {
   start <- this.folder
   dirs <- list.files(start)
@@ -46,12 +48,26 @@ get.data <- function(this.folder, which.chain) {
   
 }
 
+##Get all of the data
 survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
 survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
+survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
 
-plot.data <- data.frame(x=c(rep(survival.data.WT$identity, 2), rep(survival.data.UnB$identity, 2)), 
-                        y=c(survival.data.WT$ev.binding, survival.data.WT$an.binding, survival.data.UnB$ev.binding, survival.data.UnB$an.binding), 
-                        id=c(rep('WT-Evolved', dim(survival.data.WT)[1]), rep('WT-Ancestral', dim(survival.data.WT)[1]), rep('NonB-Evolved', dim(survival.data.UnB)[1]), rep('NonB-Ancestral', dim(survival.data.UnB)[1]))
+##Put the data in a usable format for later
+plot.data <- data.frame(x=c(rep(survival.data.WT$identity, 2), 
+                            rep(survival.data.UnB$identity, 2), 
+                            rep(survival.data.UnS$identity, 2)), 
+                        y=c(survival.data.WT$ev.binding, 
+                            survival.data.WT$an.binding, 
+                            survival.data.UnB$ev.binding, 
+                            survival.data.UnB$an.binding, 
+                            survival.data.UnS$ev.binding, survival.data.UnS$an.binding), 
+                        id=c(rep('WT-Evolved', dim(survival.data.WT)[1]), 
+                             rep('WT-Ancestral', dim(survival.data.WT)[1]), 
+                             rep('NonB-Evolved', dim(survival.data.UnB)[1]), 
+                             rep('NonB-Ancestral', dim(survival.data.UnB)[1]), 
+                             rep('LowS-Evolved', dim(survival.data.UnS)[1]), 
+                             rep('LowS-Ancestral', dim(survival.data.UnS)[1]))
 )
 
 plot.data <- plot.data[order(plot.data$x), ]
@@ -104,13 +120,53 @@ for (tau in c(alpha, 0.5, 1-alpha)) {
   plot.data.evolved.nb <- cbind(plot.data.evolved.nb, y.fit.evolved)
 }
 
-plot.data <- data.frame(x=c(plot.data.ancestral.wt$x, plot.data.ancestral.nb$x),
-                        y=c(plot.data.ancestral.wt$y, plot.data.ancestral.nb$y),
-                        ysmooth=c(plot.data.ancestral.wt[, 5], plot.data.ancestral.nb[, 5]),
-                        ymin=c(plot.data.ancestral.wt[, 4], plot.data.ancestral.nb[, 4]),
-                        ymax=c(plot.data.ancestral.wt[, 6], plot.data.ancestral.nb[, 6]),
-                        id=c(rep('WT-Ancestral', length(plot.data.ancestral.wt$x)), rep('NonB-Ancestral', length(plot.data.ancestral.nb$x))))
+##Start of Low Stability
+plot.data.ancestral.ls <- plot.data[plot.data$id == 'LowS-Ancestral', ]
 
+degree.freedom <- 4
+
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.ancestral.ls)
+
+for (tau in c(alpha, 0.5, 1-alpha)) {
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.ancestral.ls)
+  y.fit.ancestral <- X %*% fit$coef
+  plot.data.ancestral.ls <- cbind(plot.data.ancestral.ls, y.fit.ancestral)
+}
+
+plot.data.evolved.ls <- plot.data[plot.data$id == 'LowS-Evolved', ]
+
+X <- model.matrix(y ~ bs(x, df=degree.freedom), data=plot.data.evolved.ls)
+
+for (tau in c(alpha, 0.5, 1-alpha)) {
+  fit <- rq(y ~ bs(x, df=degree.freedom), tau=tau, data=plot.data.evolved.ls)
+  y.fit.evolved <- X %*% fit$coef
+  plot.data.evolved.ls <- cbind(plot.data.evolved.ls, y.fit.evolved)
+}
+
+##Assemble data together for plotting
+plot.data <- data.frame(x=c(plot.data.ancestral.wt$x, 
+                            plot.data.ancestral.nb$x,
+                            plot.data.ancestral.ls$x),
+                        y=c(plot.data.ancestral.wt$y, 
+                            plot.data.ancestral.nb$y,
+                            plot.data.ancestral.ls$y),
+                        ysmooth=c(plot.data.ancestral.wt[, 5], 
+                                  plot.data.ancestral.nb[, 5],
+                                  plot.data.ancestral.ls[, 5]),
+                        ymin=c(plot.data.ancestral.wt[, 4], 
+                               plot.data.ancestral.nb[, 4],
+                               plot.data.ancestral.ls[, 4]),
+                        ymax=c(plot.data.ancestral.wt[, 6], 
+                               plot.data.ancestral.nb[, 6],
+                               plot.data.ancestral.ls[, 6]),
+                        id=c(rep('WT-Ancestral', length(plot.data.ancestral.wt$x)), 
+                             rep('NonB-Ancestral', length(plot.data.ancestral.nb$x)),
+                             rep('LowS-Ancestral', length(plot.data.ancestral.ls$x))))
+
+##Put in levels so the legend is in the right order
+plot.data$id <- factor(plot.data$id, levels = c('WT-Ancestral', 'LowS-Ancestral', 'NonB-Ancestral'))
+
+##Plot function 
 survival.lines <- function(df) {
   require(ggplot2)
   require(grid)
@@ -131,7 +187,7 @@ survival.lines <- function(df) {
   g <- g + ylab('Binding Energy')
   g <- g + xlab('Identity (%)')
   g <- g + scale_x_reverse(breaks=seq(1, 0, -0.1), limits=c(1, 0))
-  g <- g + scale_y_continuous(breaks=seq(-16., 16., 4.), limits=c(-16., 16.))
+  g <- g + scale_y_continuous(breaks=seq(-16., 16., 4.), limits=c(-14., 8.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
   g <- g + theme(axis.text.x = element_text(size=24))
