@@ -84,11 +84,9 @@ plot(fit, xlab="Divergence (1 - Identity)",
 
 axis( 1, 
       cex.axis=2,
-      #at = seq(0, 1000, 100),
       lwd=2)
 axis( 2, 
       cex.axis=2,
-      #at = seq(0, 1, 0.1),
       lwd=2)
 
 legend(.70, 1, c('Wild-Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
