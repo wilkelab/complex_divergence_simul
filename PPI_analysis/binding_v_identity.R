@@ -1,9 +1,14 @@
 require(splines)
 require(quantreg)
+require(latticeExtra)
 
 rm(list = ls())
 this.chain = "C"
 alpha = 0.318/2
+
+mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
+
+cbbPalette <- c('WT-Ancestral' = "#000000", 'NonB-Ancestral' = mycols[1], 'LowS-Ancestral' = mycols[4])
 
 ##Determine the last letter because that's where the chain is encoded
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
@@ -185,7 +190,9 @@ survival.lines <- function(df) {
   g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + 
     geom_line(aes(y=ysmooth), size=1.4) + 
     #geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
-    geom_point(alpha=0.2, size=1.5)
+    geom_point(alpha=0.2, size=1.5) +
+    scale_colour_manual(values=cbbPalette) + 
+    scale_fill_manual(values=cbbPalette)
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Binding Energy')
   g <- g + xlab('Identity (%)')

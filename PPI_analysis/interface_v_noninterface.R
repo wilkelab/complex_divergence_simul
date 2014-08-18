@@ -7,7 +7,7 @@ last.letter <- function(this.string) {tmp.length <- nchar(this.string); substrin
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
 
-cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[2])
+cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[4])
 
 interface.plot <- function(df) {
   graphics.off()

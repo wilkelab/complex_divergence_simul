@@ -3,9 +3,13 @@ require(ggplot2)
 require(grid)
 require(latticeExtra)
 
-this.chain = "A"
+this.chain = "C"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
+
+mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
+
+cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[4])
 
 get.data <- function(this.folder, which.chain) {
   start <- this.folder
@@ -45,10 +49,6 @@ get.data <- function(this.folder, which.chain) {
   return(tmp.data)
   
 }
-
-mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
-
-cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[2])
 
 identity.plot <- function(df, name) {
   graphics.off()

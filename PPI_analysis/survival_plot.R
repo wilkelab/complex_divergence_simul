@@ -4,6 +4,8 @@ require(latticeExtra)
 rm(list = ls())
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
+mycols <- c("#000000",mycols[1], mycols[4])
+
 
 survival.value = -7.5
 this.chain = "A"
@@ -72,7 +74,7 @@ par(family = 'Helvetica')
 
 plot(fit, xlab="Time (Mutations Attempted)", 
      ylab="Survival Probability", 
-     col=c(mycols[1], mycols[4], mycols[2]), 
+     col=c(mycols[3], mycols[2], mycols[1]), 
      cex.lab=2,
      mark=19,
      axes=F,
@@ -89,6 +91,6 @@ axis( 2,
       #at = seq(0, 1, 0.1),
       lwd=2)
 
-legend(650, 0.2, c('Low Stability', 'Non-Bound', 'Wild-Type'), col=c(mycols[1], mycols[4], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
+legend(650, 0.2, c('Low Stability', 'Non-Bound', 'Wild-Type'), col=c(mycols[3], mycols[2], mycols[1]), lty=1, cex=2, lwd=2.5, bty = "n")
 
 dev.off()
