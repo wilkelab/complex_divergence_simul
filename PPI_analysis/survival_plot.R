@@ -51,7 +51,7 @@ survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/
 
 survival.data <- data.frame(time=c(survival.data.WT$survival.count, survival.data.UnB$survival.count), 
                             status=c(survival.data.WT$status.count, survival.data.UnB$status.count), 
-                            replicate=c(rep('WT', length(survival.data.WT$status.count)), rep('UnB', length(survival.data.UnB$status.count)))
+                            replicate=c(rep('WT Survival', length(survival.data.WT$status.count)), rep('NonB Survival', length(survival.data.UnB$status.count)))
 )
 
 #survival.data <- data.frame(time=c(survival.data.UnB$survival.count), 
@@ -74,18 +74,18 @@ plot(fit, xlab="Time (Mutations Attempted)",
      mark=19,
      axes=F,
      xlim=c(0,1000),
-     lwd=2
+     lwd=2.5
 )
 
 axis( 1, 
-      cex.axis=1.75,
+      cex.axis=2,
       at = seq(0, 1000, 100),
       lwd=2)
 axis( 2, 
-      cex.axis=1.75,
+      cex.axis=2,
       #at = seq(0, 1, 0.1),
       lwd=2)
 
-legend( 0.1, 0.1, c('UnB', 'WT'), col=c(mycols[1], mycols[4]), lty=1, cex=1.4, lwd=2)
+legend( 0.1, 0.1, c('NonB', 'WT'), col=c(mycols[1], mycols[4]), lty=1, cex=1.4, lwd=2.5, bty = "n")
 
 dev.off()
