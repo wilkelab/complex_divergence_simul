@@ -3,11 +3,11 @@ require(ggplot2)
 require(grid)
 require(latticeExtra)
 
-this.chain = "A"
+this.chain = "C"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
-get.data <- function(this.folder, this.set, which.chain) {
+get.data <- function(this.folder, which.chain) {
   start <- this.folder
   dirs <- list.files(start)
   
@@ -40,7 +40,7 @@ get.data <- function(this.folder, this.set, which.chain) {
   }
   
   tmp.data <- data.frame(names=name, identity=identity, ab.count=ab.count, ev.binding=ev.binding, an.binding=an.binding, stab=stab, 
-                         chain=chain, replicate=replicate, set=rep(this.set, length(replicate)))
+                         chain=chain, replicate=replicate)
   
   return(tmp.data)
   
@@ -62,10 +62,11 @@ identity.plot <- function(df, name) {
                             panel.border=element_blank(),
                             axis.line=element_line())
   
-  g <- ggplot(df, aes(x=ab.count, y=identity, fill=set, color=set)) + 
-    geom_point() + 
+  g <- ggplot(df, aes(x=x, y=y, fill=set, color=set)) + 
+    geom_point(alpha = 0.2, size=1.5) + 
     scale_colour_manual(values=cbbPalette) + 
-    scale_fill_manual(values=cbbPalette)
+    scale_fill_manual(values=cbbPalette) +
+    stat_smooth(se = FALSE, lwd=1.5) 
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Sequence Identity (%)')
   g <- g + xlab('Time (Mutations Attempted)')
@@ -86,10 +87,20 @@ identity.plot <- function(df, name) {
                  legend.text=element_text(size=22),
                  legend.key.size = unit(1, "cm"))
   
-  ggsave(g, file=paste('~/Desktop/identity_v_time_', name, '.pdf', sep=''), width=12, height=10)
+  ggsave(g, file=paste('~/Sandbox/complex_divergence_simul/figures/identity_v_time_', name, '.pdf', sep=''), width=12, height=10)
   return(g)
 }
 
-WT <- get.data('~/Desktop/WT_data_new/', 'WT', this.chain)
+WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
+UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
+UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 
-identity.plot(WT, this.chain)
+plot.data <- data.frame(x=c(WT$ab.count, UnB$ab.count, UnS$ab.count),
+                        y=c(WT$identity, UnB$identity, UnS$identity),
+                        set=c(rep('WT', length(WT$identity)), 
+                              rep('UnB', length(UnB$identity)), 
+                              rep('UnS', length(UnS$identity))
+                              )
+                        )
+
+identity.plot(plot.data, this.chain)
