@@ -8,7 +8,7 @@ mycols <- c("#000000",mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "C"
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -26,8 +26,8 @@ get.data <- function(this.folder, which.chain) {
     final.letters <- sapply(dat$name, last.letter)
     dat <- dat[final.letters == which.chain, ] 
     
-    cutoff.count <- min(dat$count[which(dat$ancestral_interaction > survival.value)])
-    cutoff.divergence <- 1 - max(dat$identity[which(dat$ancestral_interaction > survival.value)])
+    cutoff.count <- max(dat$count[which(dat$ancestral_interaction < survival.value)])
+    cutoff.divergence <- 1 - min(dat$identity[which(dat$ancestral_interaction < survival.value)])
     
     cutoff.count[is.infinite(cutoff.count) | is.na(cutoff.count)] <- max(dat$count)
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(1 - dat$identity)
@@ -67,7 +67,7 @@ survival.data <- data.frame(time=c(survival.data.WT$survival.divergence,
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
-pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_divergence_', this.chain, '.pdf', sep=''), height=11, width=12)
+pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_divergence_max_', this.chain, '.pdf', sep=''), height=11, width=12)
 par(mar=c(5,5,1,2)+0.1)
 par(mgp=c(3, 1, 0))
 par(family = 'Helvetica')
