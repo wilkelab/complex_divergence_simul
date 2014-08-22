@@ -25,10 +25,10 @@ get.data <- function(this.folder, which.chain) {
     dat <- dat[final.letters == which.chain, ] 
     
     divergence <- 1 - dat$identity
-    survived <- which(dat$ancestral_interaction <= survival.value)
-    cutoff.divergence <- max(divergence[survived])
+    dead <- which(dat$ancestral_interaction > survival.value)
+    cutoff.divergence <- min(divergence[dead])
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(divergence)
-
+    
     survival.divergence <- append(survival.divergence, cutoff.divergence)
     status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(divergence)))
   }
@@ -61,7 +61,7 @@ survival.data <- data.frame(time=c(survival.data.WT$survival.divergence,
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
-pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_divergence_max_', this.chain, '.pdf', sep=''), height=11, width=12)
+pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_divergence_min_', this.chain, '.pdf', sep=''), height=11, width=12)
 par(mar=c(5,5,1,2)+0.1)
 par(mgp=c(3, 1, 0))
 par(family = 'Helvetica')
