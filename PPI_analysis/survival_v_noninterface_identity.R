@@ -16,32 +16,24 @@ get.data <- function(this.folder, which.chain) {
   start <- this.folder
   dirs <- list.files(start)
   
-  survival.count <- c()
   survival.divergence <- c()
   status.divergence <- c()
-  status.count <- c()
   
   for(i in dirs) {
     dat <- read.table(paste(start, i, sep=''), sep='\t', header=T, stringsAsFactors=F);
     final.letters <- sapply(dat$name, last.letter)
     dat <- dat[final.letters == which.chain, ] 
     
-    cutoff.count <- min(dat$count[which(dat$ancestral_interaction > survival.value)])
-    cutoff.divergence <- 1 - max(dat$non_interface_identity[which(dat$ancestral_interaction > survival.value)])
-    
-    cutoff.count[is.infinite(cutoff.count) | is.na(cutoff.count)] <- max(dat$count)
-    cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(1 - dat$non_interface_identity)
+    divergence <- 1 - dat$non_interface_identity
+    survived <- which(dat$ancestral_interaction <= survival.value)
+    cutoff.divergence <- max(divergence[survived])
+    cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(divergence)
     
     survival.divergence <- append(survival.divergence, cutoff.divergence)
-    status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(1 - dat$non_interface_identity)))
-    
-    survival.count <- append(survival.count, cutoff.count)
-    status.count <- append(status.count, as.numeric(!cutoff.count == max(dat$count)))
+    status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(divergence)))
   }
   
-  tmp.survival.data <- data.frame(survival.count=survival.count,
-                                  survival.divergence=survival.divergence,
-                                  status.count=status.count, 
+  tmp.survival.data <- data.frame(survival.divergence=survival.divergence,
                                   status.divergence=status.divergence
   )
   
@@ -89,6 +81,6 @@ axis( 2,
       cex.axis=2,
       lwd=2)
 
-legend(.70, 1, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
+legend(0, 0.15, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
 
 dev.off()
