@@ -1,3 +1,5 @@
+import numpy as np
+
 def calculate_fraction_interface(interface_sites, mutation_sites, non_interface_sites):
     '''This function has two inputs.
        1.) A list of the interface sites in Integer format
