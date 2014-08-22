@@ -16,32 +16,22 @@ get.data <- function(this.folder, which.chain) {
   start <- this.folder
   dirs <- list.files(start)
   
-  survival.count <- c()
   survival.divergence <- c()
   status.divergence <- c()
-  status.count <- c()
   
   for(i in dirs) {
     dat <- read.table(paste(start, i, sep=''), sep='\t', header=T, stringsAsFactors=F);
     final.letters <- sapply(dat$name, last.letter)
     dat <- dat[final.letters == which.chain, ] 
     
-    cutoff.count <- min(dat$count[which(dat$ancestral_interaction > survival.value)])
     cutoff.divergence <- 1 - max(dat$identity[which(dat$ancestral_interaction > survival.value)])
-    
-    cutoff.count[is.infinite(cutoff.count) | is.na(cutoff.count)] <- max(dat$count)
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(1 - dat$identity)
     
     survival.divergence <- append(survival.divergence, cutoff.divergence)
     status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(1 - dat$identity)))
-    
-    survival.count <- append(survival.count, cutoff.count)
-    status.count <- append(status.count, as.numeric(!cutoff.count == max(dat$count)))
   }
   
-  tmp.survival.data <- data.frame(survival.count=survival.count,
-                                  survival.divergence=survival.divergence,
-                                  status.count=status.count, 
+  tmp.survival.data <- data.frame(survival.divergence=survival.divergence,
                                   status.divergence=status.divergence
   )
   
@@ -52,6 +42,8 @@ get.data <- function(this.folder, which.chain) {
 survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
 survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
+
+print(mean(survival.data.UnB$survival.divergence))
 
 survival.data <- data.frame(time=c(survival.data.WT$survival.divergence, 
                                    survival.data.UnB$survival.divergence,

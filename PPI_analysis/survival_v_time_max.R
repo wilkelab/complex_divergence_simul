@@ -17,8 +17,6 @@ get.data <- function(this.folder, which.chain) {
   dirs <- list.files(start)
   
   survival.count <- c()
-  survival.divergence <- c()
-  status.divergence <- c()
   status.count <- c()
   
   for(i in dirs) {
@@ -27,22 +25,14 @@ get.data <- function(this.folder, which.chain) {
     dat <- dat[final.letters == which.chain, ] 
     
     cutoff.count <- max(dat$count[which(dat$ancestral_interaction < survival.value)])
-    cutoff.divergence <- 1 - min(dat$identity[which(dat$ancestral_interaction < survival.value)])
-    
     cutoff.count[is.infinite(cutoff.count) | is.na(cutoff.count)] <- max(dat$count)
-    cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(1 - dat$identity)
-    
-    survival.divergence <- append(survival.divergence, cutoff.divergence)
-    status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(1 - dat$identity)))
     
     survival.count <- append(survival.count, cutoff.count)
     status.count <- append(status.count, as.numeric(!cutoff.count == max(dat$count)))
   }
   
   tmp.survival.data <- data.frame(survival.count=survival.count,
-                                  survival.divergence=survival.divergence,
-                                  status.count=status.count, 
-                                  status.divergence=status.divergence
+                                  status.count=status.count
   )
   
   return(tmp.survival.data)
@@ -52,6 +42,8 @@ get.data <- function(this.folder, which.chain) {
 survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
 survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
+
+print(mean(survival.data.UnB$survival.count))
 
 survival.data <- data.frame(time=c(survival.data.WT$survival.count, 
                                    survival.data.UnB$survival.count,
