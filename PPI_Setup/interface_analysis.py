@@ -35,6 +35,9 @@ def calculate_ca_distance(structure, test_chain):
     distances = []
     for atom1 in structure.get_atoms():
         full_id = atom1.get_full_id()
+        if len(distances) == 0:
+            start_num = int(full_id[3][1])
+            
         if test_chain == full_id[2] and 'CA' == full_id[4][0]:
             test_position = atom1.get_coord()
             
@@ -44,7 +47,7 @@ def calculate_ca_distance(structure, test_chain):
                 if test_chain != ref_id[2]:
                     tmp_3d_distance = test_position - atom2.get_coord()
                     tmp_distances.append(np.sqrt(tmp_3d_distance[0]**2 + tmp_3d_distance[1]**2 + tmp_3d_distance[2]**2))
-            distances.append([int(full_id[3][1]), np.array(tmp_distances).min()])
+            distances.append([int(full_id[3][1]) - start_num, np.array(tmp_distances).min()])
             
     return(np.array(distances))
     
