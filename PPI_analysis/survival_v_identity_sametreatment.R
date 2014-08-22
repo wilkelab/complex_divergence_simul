@@ -8,8 +8,8 @@ mycols <- c("#000000", mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "A"
-treatment = 'WT'
+this.chain = "C"
+treatment = 'UnS'
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -30,22 +30,23 @@ get.data <- function(this.folder, which.chain) {
     dat <- dat[final.letters == which.chain, ] 
     
     divergence <- 1 - dat$identity
-    survived <- which(dat$ancestral_interaction <= survival.value)
-    cutoff.divergence <- max(divergence[survived])
+    survived <- dat$ancestral_interaction <= survival.value
+    cutoff.surv <- max(divergence[survived])
+    cutoff.divergence <- min(divergence[!survived & divergence >= cutoff.surv])
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(divergence)
     survival.divergence <- append(survival.divergence, cutoff.divergence)
     status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(divergence)))
     
     divergence.interface <- 1 - dat$interface_identity
-    survived <- which(dat$ancestral_interaction <= survival.value)
-    cutoff.divergence.interface <- max(divergence.interface[survived])
+    cutoff.surv.interface <- max(divergence.interface[survived])
+    cutoff.divergence.interface <- min(divergence.interface[!survived & divergence.interface >= cutoff.surv.interface])
     cutoff.divergence.interface[is.infinite(cutoff.divergence.interface) | is.na(cutoff.divergence.interface)] <- max(divergence.interface)
     survival.divergence.interface <- append(survival.divergence.interface, cutoff.divergence.interface)
     status.divergence.interface <- append(status.divergence.interface, as.numeric(!cutoff.divergence.interface == max(divergence.interface)))
     
     divergence.noninterface <- 1 - dat$non_interface_identity
-    survived <- which(dat$ancestral_interaction <= survival.value)
-    cutoff.divergence.noninterface <- max(divergence.noninterface[survived])
+    cutoff.surv.noninterface <- max(divergence.noninterface[survived])
+    cutoff.divergence.noninterface <- min(divergence.noninterface[!survived & divergence.noninterface >= cutoff.surv.noninterface])
     cutoff.divergence.noninterface[is.infinite(cutoff.divergence.noninterface) | is.na(cutoff.divergence.noninterface)] <- max(divergence.noninterface)
     survival.divergence.noninterface <- append(survival.divergence.noninterface, cutoff.divergence.noninterface)
     status.divergence.noninterface <- append(status.divergence.noninterface, as.numeric(!cutoff.divergence.noninterface == max(divergence.noninterface)))

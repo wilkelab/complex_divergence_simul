@@ -4,7 +4,7 @@ require(latticeExtra)
 rm(list = ls())
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
-mycols <- c("#000000",mycols[1], mycols[4])
+mycols <- c("#000000", mycols[1], mycols[4])
 
 
 survival.value = -7.5
@@ -24,12 +24,13 @@ get.data <- function(this.folder, which.chain) {
     final.letters <- sapply(dat$name, last.letter)
     dat <- dat[final.letters == which.chain, ] 
     
-    cutoff.count <- min(dat$count[which(dat$ancestral_interaction > survival.value)])
+    cutoff.count <- max(dat$count[dat$ancestral_interaction < survival.value])
     cutoff.count[is.infinite(cutoff.count) | is.na(cutoff.count)] <- max(dat$count)
     
     survival.count <- append(survival.count, cutoff.count)
     status.count <- append(status.count, as.numeric(!cutoff.count == max(dat$count)))
   }
+  
   
   tmp.survival.data <- data.frame(survival.count=survival.count,
                                   status.count=status.count
@@ -42,6 +43,8 @@ get.data <- function(this.folder, which.chain) {
 survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
 survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
 survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
+
+print(mean(survival.data.UnB$survival.count))
 
 survival.data <- data.frame(time=c(survival.data.WT$survival.count, 
                                    survival.data.UnB$survival.count,
@@ -57,7 +60,7 @@ survival.data <- data.frame(time=c(survival.data.WT$survival.count,
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
-pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_time_', this.chain, '.pdf', sep=''), height=11, width=12)
+pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_time_max_', this.chain, '.pdf', sep=''), height=11, width=12)
 par(mar=c(5,5,1,2)+0.1)
 par(mgp=c(3, 1, 0))
 par(family = 'Helvetica')
