@@ -31,6 +31,7 @@ get.data <- function(this.folder, which.chain) {
     status.count <- append(status.count, as.numeric(!cutoff.count == max(dat$count)))
   }
   
+  
   tmp.survival.data <- data.frame(survival.count=survival.count,
                                   status.count=status.count
   )

@@ -24,7 +24,7 @@ get.data <- function(this.folder, which.chain) {
     final.letters <- sapply(dat$name, last.letter)
     dat <- dat[final.letters == which.chain, ] 
     
-    cutoff.divergence <- 1 - min(dat$identity[which(dat$ancestral_interaction < survival.value)])
+    cutoff.divergence <- 1 - max(dat$identity[which(dat$ancestral_interaction > survival.value)])
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(1 - dat$identity)
     
     survival.divergence <- append(survival.divergence, cutoff.divergence)
