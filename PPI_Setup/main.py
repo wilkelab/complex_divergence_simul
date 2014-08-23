@@ -5,7 +5,7 @@ from Bio import *
 import Bio.PDB as PDB
 
 def main():
-    if len( sys.argv ) != 10:
+    if len( sys.argv ) != 11:
         print '''
 
         You don't have the right number of arguments.
@@ -13,18 +13,22 @@ def main():
         Input line should resemble:
         python calculate_distance.py prefix population-size beta num-mutations dGt1 dGt2 dGt3 fixed_mutation_file all_mutation_file
 
+        For example:
+        python main.py 2eke na 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
+
         '''
     else:
         args =  sys.argv
         prefix          = args[1]
-        population_size = float(args[2])
-        beta            = float(args[3])
-        num_tried       = int(args[4])
-        dGt1            = float(args[5])
-        dGt2            = float(args[6])
-        dGt3            = float(args[7])
-        out_file        = args[8]
-        all_file        = args[9]
+        dna             = args[2]
+        population_size = float(args[3])
+        beta            = float(args[4])
+        num_tried       = int(args[5])
+        dGt1            = float(args[6])
+        dGt2            = float(args[7])
+        dGt3            = float(args[8])
+        out_file        = args[9]
+        all_file        = args[10]
 
         all_kept_mutants  = []
         all_mutants_tried = []
@@ -33,14 +37,14 @@ def main():
 
         initialize_output_files(out_file, all_file)
 
-        foldx.runFoldxRepair(prefix, [prefix + '.bak'])
+        #foldx.runFoldxRepair(prefix, [prefix + '.bak'])
         score_ob = foldx.Scores()
-        score_ob.cleanUp([])
-        repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
-        if len(repair_file) == 1:
-            shutil.move(repair_file[0], prefix + '.pdb')
-        else:
-            raise Exception('No output from RepairPDB.')    
+        #score_ob.cleanUp([])
+        #repair_file = glob.glob('RepairPDB_' + prefix + '*.pdb')
+        #if len(repair_file) == 1:
+        #    shutil.move(repair_file[0], prefix + '.pdb')
+        #else:
+        #    raise Exception('No output from RepairPDB.')    
 
         for i in range(0, num_tried):
             print(i)
