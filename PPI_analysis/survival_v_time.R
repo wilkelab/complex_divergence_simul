@@ -8,7 +8,7 @@ mycols <- c("#000000", mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "A"
+this.chain = "C"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -60,7 +60,7 @@ survival.data <- data.frame(time=c(survival.data.WT$survival.count,
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
-pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_time_max_', this.chain, '.pdf', sep=''), height=11, width=12)
+pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_time_', this.chain, '.pdf', sep=''), height=11, width=12)
 par(mar=c(5,5,1,2)+0.1)
 par(mgp=c(3, 1, 0))
 par(family = 'Helvetica')
