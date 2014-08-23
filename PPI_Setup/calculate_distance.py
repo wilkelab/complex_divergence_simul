@@ -27,8 +27,6 @@ def main():
         mutation_sites = find_mutation_sites(file_name)
         interface_sites = distances[distances[:, 1] <= distance_cutoff][:, 0]
         non_interface_sites = distances[distances[:, 1] > distance_cutoff][:, 0]
-        
-        #print(interface_sites)
 
         interface_fraction, non_interface_fraction = calculate_fraction_interface(interface_sites, mutation_sites, len(non_interface_sites))
 
