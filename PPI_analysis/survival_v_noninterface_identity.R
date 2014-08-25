@@ -8,7 +8,7 @@ mycols <- c("#000000",mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "C"
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -26,8 +26,7 @@ get.data <- function(this.folder, which.chain) {
     
     divergence <- 1 - dat$non_interface_identity
     survived <- dat$ancestral_interaction <= survival.value
-    cutoff.surv <- max(divergence[survived])
-    cutoff.divergence <- min(divergence[!survived & divergence >= cutoff.surv])
+    cutoff.divergence <- max(divergence[survived])
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(divergence)
     
     survival.divergence <- append(survival.divergence, cutoff.divergence)
@@ -42,9 +41,9 @@ get.data <- function(this.folder, which.chain) {
 }
 
 ##Get all of the data
-survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
-survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
-survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
+survival.data.WT <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/WT_data/', this.chain)
+survival.data.UnB <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/UnB_data/', this.chain)
+survival.data.UnS <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/UnS_data/', this.chain)
 
 survival.data <- data.frame(time=c(survival.data.WT$survival.divergence, 
                                    survival.data.UnB$survival.divergence,
@@ -60,7 +59,7 @@ survival.data <- data.frame(time=c(survival.data.WT$survival.divergence,
 fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
-pdf(paste('~/Sandbox/complex_divergence_simul/figures/survival_v_noninterface_divergence_', this.chain, '.pdf', sep=''), height=11, width=12)
+pdf(paste('~/Sandbox/marcotte/complex_divergence_simul/figures/survival_v_noninterface_divergence_', this.chain, '.pdf', sep=''), height=11, width=12)
 par(mar=c(5,5,1,2)+0.1)
 par(mgp=c(3, 1, 0))
 par(family = 'Helvetica')
