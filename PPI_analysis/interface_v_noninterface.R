@@ -3,11 +3,45 @@ require(ggplot2)
 require(grid)
 require(latticeExtra)
 
+this.chain = "C"
+
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
 mycols <- dput(ggplot2like(n = 5, h.start = 0, l = 65)$superpose.line$col)
 
 cbbPalette <- c('Wild Type' = "#000000", 'Non-Bound' = mycols[1], 'Low Stability' = mycols[4])
+
+last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
+
+
+get.data <- function(this.folder, which.chain) {
+  start <- this.folder
+  dirs <- list.files(start)
+  
+  survival.divergence <- c()
+  status.divergence <- c()
+  
+  for(i in dirs) {
+    dat <- read.table(paste(start, i, sep=''), sep='\t', header=T, stringsAsFactors=F);
+    final.letters <- sapply(dat$name, last.letter)
+    dat <- dat[final.letters == which.chain, ] 
+    
+    divergence <- 1 - dat$identity
+    survived <- dat$ancestral_interaction <= survival.value
+    cutoff.surv <- max(divergence[survived])
+    cutoff.divergence <- min(divergence[!survived & divergence >= cutoff.surv])
+    cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(divergence)
+    
+    survival.divergence <- append(survival.divergence, cutoff.divergence)
+    status.divergence <- append(status.divergence, as.numeric(!cutoff.divergence == max(divergence)))
+  }
+  
+  tmp.survival.data <- data.frame(survival.divergence=survival.divergence,
+                                  status.divergence=status.divergence
+  )
+  
+  return(tmp.survival.data)
+}
 
 interface.plot <- function(df) {
   graphics.off()
@@ -48,9 +82,10 @@ interface.plot <- function(df) {
   return(g)
 }
 
-WT <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/wt_interface.dat', header=T)
-UnB <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/unb_interface.dat', header=T)
-UnS <- read.table('~/Sandbox/complex_divergence_simul/data/Interface_data/uns_interface.dat', header=T)
+##Get all of the data
+survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
+survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
+survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
 
 plot.data <- data.frame(id=c(rep('Wild Type', length(WT$interface)), 
                              rep('Non-Bound', length(UnB$interface)), 

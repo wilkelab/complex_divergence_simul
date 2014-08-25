@@ -24,7 +24,7 @@ def main():
         structure = p.get_structure(pdb[0:-4], pdb)
     
         distances = calculate_ca_distance(structure, chain)
-        mutation_sites = find_mutation_sites(file_name)
+        mutation_sites = find_mutation_sites(file_name, chain)
         interface_sites = distances[distances[:, 1] <= distance_cutoff][:, 0]
         non_interface_sites = distances[distances[:, 1] > distance_cutoff][:, 0]
 
@@ -32,7 +32,7 @@ def main():
 
         print(str(interface_fraction) + '\t' + str(non_interface_fraction))
 
-def find_mutation_sites(file_name):
+def find_mutation_sites(file_name, chain):
     '''This function has one input.
        1.) A file name in String format for the fixed mutation data from main.py
            Traditionally this file is named final_data.txt, but 
@@ -51,7 +51,10 @@ def find_mutation_sites(file_name):
         if split[0] == 'file':
             continue
         else:
-            mutation_sites.append(int(split[1][1:-1]))
+            if chain == 'A' and int(split[1][1:-1]) < 160:
+                mutation_sites.append(int(split[1][1:-1]))
+            elif chain == 'C' and int(split[1][1:-1]) > 160:
+                mutation_sites.appen(int(split[1][1:-1]))
 
     return(mutation_sites)
 
