@@ -51,10 +51,10 @@ def find_mutation_sites(file_name, chain):
         if split[0] == 'file':
             continue
         else:
-            if chain == 'A' and int(split[1][1:-1]) < 160:
-                mutation_sites.append(int(split[1][1:-1]))
-            elif chain == 'C' and int(split[1][1:-1]) > 160:
-                mutation_sites.appen(int(split[1][1:-1]))
+            if chain == 'A' and int(split[1][1:-1]) <= 156:
+                mutation_sites.append(int(split[1][1:-1]) - 3)
+            elif chain == 'C' and int(split[1][1:-1]) > 156:
+                mutation_sites.append(int(split[1][1:-1]) - 1023)
 
     return(mutation_sites)
 
