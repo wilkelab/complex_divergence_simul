@@ -30,6 +30,7 @@ interface.plot <- function(df) {
   g <- g + ylab('Probability Density')
   g <- g + xlab('Odds of accepting Non-interface to Interface Mutations')
   g <- g + scale_x_continuous(breaks=seq(0, 7, 1), limits=c(0, 7))
+  g <- g + scale_y_continuous(breaks=seq(0, 2.5, 0.5), limits=c(0, 2.5))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
   g <- g + theme(axis.title.x = element_text(size=32, vjust=-0.25))
   g <- g + theme(axis.text.x = element_text(size=24, vjust=1.3))
@@ -45,13 +46,13 @@ interface.plot <- function(df) {
                  legend.text=element_text(size=24),
                  legend.key.size = unit(1, "cm"))
   
-  ggsave(g, file=paste('~/Sandbox/marcotte//complex_divergence_simul/figures/interface_odds_A.pdf', sep=''), width=12, height=10)
+  ggsave(g, file=paste('~/Sandbox/marcotte//complex_divergence_simul/figures/interface_odds_C.pdf', sep=''), width=12, height=10)
   return(g)
 }
 
-WT <- read.table('~/Sandbox/marcotte//complex_divergence_simul/data/Interface_data/wt_interface_A.dat', header=T)
-UnB <- read.table('~/Sandbox/marcotte//complex_divergence_simul/data/Interface_data/unb_interface_A.dat', header=T)
-UnS <- read.table('~/Sandbox/marcotte//complex_divergence_simul/data/Interface_data/uns_interface_A.dat', header=T)
+WT <- read.table('~/Sandbox/marcotte//complex_divergence_simul/data/Interface_data/wt_interface_C.dat', header=T)
+UnB <- read.table('~/Sandbox/marcotte//complex_divergence_simul/data/Interface_data/unb_interface_C.dat', header=T)
+UnS <- read.table('~/Sandbox/marcotte//complex_divergence_simul/data/Interface_data/uns_interface_C.dat', header=T)
 
 plot.data <- data.frame(id=c(rep('Wild Type', length(WT$interface)), 
                              rep('Non-Bound', length(UnB$interface)), 
