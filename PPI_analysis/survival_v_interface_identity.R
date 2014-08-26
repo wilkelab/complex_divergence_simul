@@ -60,27 +60,36 @@ fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
 pdf(paste('~/Sandbox/marcotte/complex_divergence_simul/figures/survival_v_interface_divergence_', this.chain, '.pdf', sep=''), height=11, width=12)
-par(mar=c(5,5,1,2)+0.1)
-par(mgp=c(3, 1, 0))
-par(family = 'Helvetica')
+par(mar=c(4,6,0,2))
+par(mgp=c(3, 1.2, 0))
 
-plot(fit, xlab="Divergence (1 - Identity)", 
-     ylab="Survival Probability", 
+plot(fit,
      col=c(mycols[3], mycols[2], mycols[1]), 
      cex.lab=2,
      mark=19,
      axes=F,
-     xlim=c(0,1),
-     lwd=2.5
+     xlim=c(0,1.0),
+     lwd=6,
+     cex=2.5,
+     font=2
 )
 
 axis( 1, 
-      cex.axis=2,
-      lwd=2)
+      cex.axis=2.25,
+      lwd=5,
+      at=seq(0, 1.0, by=0.2),
+      labels=seq(0, 100, by=20),
+      line=-1)
 axis( 2, 
-      cex.axis=2,
-      lwd=2)
+      cex.axis=2.25,
+      lwd=5,
+      at=seq(0, 1.0, by=0.2),
+      labels=seq(0, 100, by=20),
+      las=1)
 
-legend(0, 0.15, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
+mtext("Divergence (100 - % Amino Acid Identity)", side=1, line = 2.5, cex=3, font=2)
+mtext("% Binding Ancestor", side=2, line = 3.75, cex=3, font=2)
+
+legend(0, 0.15, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=10, bty = "n")
 
 dev.off()

@@ -52,9 +52,9 @@ get.data <- function(this.folder, which.chain) {
 }
 
 ##Get all of the data
-survival.data.WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
-survival.data.UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
-survival.data.UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
+survival.data.WT <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/WT_data/', this.chain)
+survival.data.UnB <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/UnB_data/', this.chain)
+survival.data.UnS <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/UnS_data/', this.chain)
 
 ##Put the data in a usable format for later
 plot.data <- data.frame(x=c(rep(survival.data.WT$ab.count, 2), 
@@ -186,7 +186,7 @@ survival.lines <- function(df) {
   g <- ggplot(df, aes(x=x, y=y, color=id, fill=id)) + 
     #geom_ribbon(aes(ymin=ymin, ymax=ymax), alpha=0.2, color=NA)
     geom_point(alpha=0.2, size=1.5) +
-    geom_line(aes(y=ysmooth), size=1.4) + 
+    geom_line(aes(y=ysmooth), size=2) + 
     scale_colour_manual(values=cbbPalette) + 
     scale_fill_manual(values=cbbPalette)
   g <- g + theme(strip.background=element_blank())
@@ -195,21 +195,21 @@ survival.lines <- function(df) {
   g <- g + scale_x_continuous(breaks=seq(0, 1000, 100), limits=c(0, 1000))
   g <- g + scale_y_continuous(breaks=seq(-16., 16., 4.), limits=c(-16., 12.))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
-  g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
-  g <- g + theme(axis.text.x = element_text(size=24))
-  g <- g + theme(axis.title.y = element_text(size=24, vjust=2))
-  g <- g + theme(axis.text.y = element_text(size=24))
-  g <- g + theme(axis.line = element_line(colour = 'black', size = 1))
-  g <- g + theme(axis.ticks = element_line(colour = 'black', size = 1))
-  g <- g + theme(plot.margin=unit(c(1.5, 1.5, 1.5, 1.5), "lines"))
+  g <- g + theme(axis.title.x = element_text(size=32, vjust=-0.25))
+  g <- g + theme(axis.text.x = element_text(size=24, vjust=1.3))
+  g <- g + theme(axis.title.y = element_text(size=32, vjust=-0.5))
+  g <- g + theme(axis.text.y = element_text(size=24, hjust=1))
+  g <- g + theme(axis.line = element_line(colour = 'black', size = 1.5))
+  g <- g + theme(axis.ticks = element_line(colour = 'black', size = 1.5))
+  g <- g + theme(plot.margin=unit(c(0.25, 0.25, 0.75, -0.5), "lines"))
   g <- g + theme(axis.ticks.margin = unit(0.25, "cm"))
   g <- g + theme(legend.position = c(0.25, 0.9),
                  legend.title=element_blank(), 
                  legend.key = element_blank(), 
-                 legend.text=element_text(size=22),
+                 legend.text=element_text(size=24),
                  legend.key.size = unit(1, "cm"))
   
-  ggsave(g, file=paste('~/Sandbox/complex_divergence_simul/figures/binding_v_time_', this.chain, '.pdf', sep=''), width=10, height=10)
+  ggsave(g, file=paste('~/Sandbox/marcotte/complex_divergence_simul/figures/binding_v_time_', this.chain, '.pdf', sep=''), width=10, height=10)
   return(g)
 }
 

@@ -70,8 +70,8 @@ plot(fit,
      cex.lab=2,
      mark=19,
      axes=F,
-     xlim=c(0,0.875),
-     lwd=8,
+     xlim=c(0,1.0),
+     lwd=6,
      cex=2.5,
      font=2
 )
@@ -89,7 +89,7 @@ axis( 2,
       labels=seq(0, 100, by=20),
       las=1)
 
-mtext("Divergence (1 - % Amino Acid Identity)", side=1, line = 2.5, cex=3, font=2)
+mtext("Divergence (100 - % Amino Acid Identity)", side=1, line = 2.5, cex=3, font=2)
 mtext("% Binding Ancestor", side=2, line = 3.75, cex=3, font=2)
 
 legend(0, 0.15, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=10, bty = "n")

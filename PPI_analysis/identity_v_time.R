@@ -3,7 +3,7 @@ require(ggplot2)
 require(grid)
 require(latticeExtra)
 
-this.chain = "C"
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -66,34 +66,34 @@ identity.plot <- function(df, name) {
     geom_point(alpha = 0.2, size=1.5) + 
     scale_colour_manual(values=cbbPalette) + 
     scale_fill_manual(values=cbbPalette) +
-    stat_smooth(se = FALSE, lwd=1.5) 
+    stat_smooth(se = FALSE, lwd=2) 
   g <- g + theme(strip.background=element_blank())
   g <- g + ylab('Sequence Identity (%)')
   g <- g + xlab('Time (Mutations Attempted)')
   g <- g + scale_x_continuous(breaks=seq(0, 1000, 100), limits=c(0, 1000))
   g <- g + scale_y_continuous(breaks=seq(0, 1, 0.1), limits=c(0, 1))
   g <- g + theme(panel.border=element_blank(), axis.line=element_line())
-  g <- g + theme(axis.title.x = element_text(size=24, vjust=-1))
-  g <- g + theme(axis.text.x = element_text(size=24))
-  g <- g + theme(axis.title.y = element_text(size=24, vjust=2))
-  g <- g + theme(axis.text.y = element_text(size=24))
-  g <- g + theme(axis.line = element_line(colour = 'black', size = 1))
-  g <- g + theme(axis.ticks = element_line(colour = 'black', size = 1))
-  g <- g + theme(plot.margin=unit(c(1.5, 1.5, 1.5, 1.5), "lines"))
+  g <- g + theme(axis.title.x = element_text(size=32, vjust=-0.25))
+  g <- g + theme(axis.text.x = element_text(size=24, vjust=1.3))
+  g <- g + theme(axis.title.y = element_text(size=32, vjust=1.5))
+  g <- g + theme(axis.text.y = element_text(size=24, hjust=1))
+  g <- g + theme(axis.line = element_line(colour = 'black', size = 1.5))
+  g <- g + theme(axis.ticks = element_line(colour = 'black', size = 1.5))
+  g <- g + theme(plot.margin=unit(c(0.25, 0.25, 0.75, 0.75), "lines"))
   g <- g + theme(axis.ticks.margin = unit(0.25, "cm"))
   g <- g + theme(legend.position = c(0.75, 0.9),
                  legend.title=element_blank(), 
                  legend.key = element_blank(), 
-                 legend.text=element_text(size=22),
+                 legend.text=element_text(size=24),
                  legend.key.size = unit(1, "cm"))
   
-  ggsave(g, file=paste('~/Sandbox/complex_divergence_simul/figures/identity_v_time_', name, '.pdf', sep=''), width=12, height=10)
+  ggsave(g, file=paste('~/Sandbox/marcotte/complex_divergence_simul/figures/identity_v_time_', name, '.pdf', sep=''), width=10, height=10)
   return(g)
 }
 
-WT <- get.data('~/Sandbox/complex_divergence_simul/data/WT_data/', this.chain)
-UnS <- get.data('~/Sandbox/complex_divergence_simul/data/UnS_data/', this.chain)
-UnB <- get.data('~/Sandbox/complex_divergence_simul/data/UnB_data/', this.chain)
+WT <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/WT_data/', this.chain)
+UnS <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/UnS_data/', this.chain)
+UnB <- get.data('~/Sandbox/marcotte/complex_divergence_simul/data/UnB_data/', this.chain)
 
 plot.data <- data.frame(x=c(WT$ab.count, UnB$ab.count, UnS$ab.count),
                         y=c(WT$identity, UnB$identity, UnS$identity),

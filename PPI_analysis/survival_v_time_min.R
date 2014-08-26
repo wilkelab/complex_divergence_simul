@@ -8,7 +8,7 @@ mycols <- c("#000000",mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "C"
+this.chain = "A"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -58,29 +58,36 @@ fit = survfit(Surv(time,status)~replicate, data=survival.data)
 print(survdiff(Surv(time,status)~replicate, data=survival.data))
 
 pdf(paste('~/Sandbox/marcotte/complex_divergence_simul/figures/survival_v_time_min_', this.chain, '.pdf', sep=''), height=11, width=12)
-par(mar=c(5,5,1,2)+0.1)
-par(mgp=c(3, 1, 0))
-par(family = 'Helvetica')
+par(mar=c(4,6,0,2))
+par(mgp=c(3, 1.2, 0))
 
-plot(fit, xlab="Time (Mutations Attempted)", 
-     ylab="Survival Probability", 
+plot(fit,
      col=c(mycols[3], mycols[2], mycols[1]), 
      cex.lab=2,
      mark=19,
      axes=F,
-     xlim=c(0,1000),
-     lwd=2.5
+     xlim=c(0, 1010),
+     lwd=6,
+     cex=2.5,
+     font=2
 )
 
 axis( 1, 
-      cex.axis=2,
-      at = seq(0, 1000, 100),
-      lwd=2)
+      cex.axis=2.25,
+      lwd=5,
+      at=seq(0, 1000, by=200),
+      labels=seq(0, 1000, by=200),
+      line=-1)
 axis( 2, 
-      cex.axis=2,
-      #at = seq(0, 1, 0.1),
-      lwd=2)
+      cex.axis=2.25,
+      lwd=5,
+      at=seq(0, 1.0, by=0.2),
+      labels=seq(0, 100, by=20),
+      las=1)
 
-legend(700, 0.3, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
+mtext("Time (Mutations Attempted)", side=1, line = 2.5, cex=3, font=2)
+mtext("% Binding Ancestor", side=2, line = 3.75, cex=3, font=2)
+
+legend(650, .9, c('Wild Type', 'Low Stability', 'Non-Bound'), col=c(mycols[1], mycols[3], mycols[2]), lty=1, cex=2, lwd=2.5, bty = "n")
 
 dev.off()
