@@ -8,7 +8,7 @@ mycols <- c("#000000",mycols[1], mycols[4])
 
 
 survival.value = -7.5
-this.chain = "A"
+this.chain = "C"
 
 last.letter <- function(this.string) {tmp.length <- nchar(this.string); substring(this.string, tmp.length, tmp.length)}
 
@@ -27,7 +27,7 @@ get.data <- function(this.folder, which.chain) {
     divergence <- 1 - dat$identity
     survived <- dat$ancestral_interaction <= survival.value
     cutoff.surv <- min(divergence[!survived])
-    cutoff.divergence <- max(divergence[survived & divergence>=cutoff.surv])
+    cutoff.divergence <- max(divergence[survived & divergence<=cutoff.surv])
     cutoff.divergence[is.infinite(cutoff.divergence) | is.na(cutoff.divergence)] <- max(divergence)
     
     survival.divergence <- append(survival.divergence, cutoff.divergence)
