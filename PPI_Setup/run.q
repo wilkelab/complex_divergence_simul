@@ -1,7 +1,7 @@
 #!/bin/bash
-#$ -N UnB
-#$ -e error_file
-#$ -o out_file
+#$ -N C
+#$ -e /dev/null
+#$ -o /dev/null
 #$ -S /bin/bash
 
 # Create Working Directory
@@ -24,7 +24,7 @@ cd $WDIR
 cp $FDIR/* .
 
 # Command to run
-/share/apps/python-2.7.2/bin/python main.py 2eke 1000 10 -23.0 -5.0 -9.7 final_data.txt 2> main.log 1> main.log
+/share/apps/python-2.7.2/bin/python main.py 2eke list 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
 
 # Copy Results Back to Home Directory
 mkdir -p $RDIR
