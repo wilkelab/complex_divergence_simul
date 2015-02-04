@@ -14,28 +14,32 @@ def main():
         python calculate_distance.py prefix population-size beta num-mutations dGt1 dGt2 dGt3 fixed_mutation_file all_mutation_file
 
         For example:
-        python main.py 2eke na 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
+        python main.py 2eke list/random 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
 
         '''
     else:
         args =  sys.argv
-        prefix          = args[1]
-        dna             = args[2]
-        population_size = float(args[3])
-        beta            = float(args[4])
-        num_tried       = int(args[5])
-        dGt1            = float(args[6])
-        dGt2            = float(args[7])
-        dGt3            = float(args[8])
-        out_file        = args[9]
-        all_file        = args[10]
+        prefix              = args[1]
+        available_mutations = args[2]
+        population_size     = float(args[3])
+        beta                = float(args[4])
+        num_tried           = int(args[5])
+        dGt1                = float(args[6])
+        dGt2                = float(args[7])
+        dGt3                = float(args[8])
+        out_file            = args[9]
+        all_file            = args[10]
 
-        all_kept_mutants  = []
-        all_mutants_tried = []
-        output_dict       = {}
-        count             = 0
+        all_kept_mutants    = []
+        all_mutants_tried   = []
+        output_dict         = {}
+        count               = 0
 
         initialize_output_files(out_file, all_file)
+
+        if available_mutations == 'list':
+             remaining_mutations = [mut.strip() for mut in list(open('mutations.txt', 'r').readlines())]
+             num_tried = len(remaining_mutations)
 
         foldx.runFoldxRepair(prefix, [prefix + '.bak'])
         score_ob = foldx.Scores()
@@ -47,13 +51,17 @@ def main():
             raise Exception('No output from RepairPDB.')    
 
         for i in range(0, num_tried):
-            print(i)
             #Make sure the pdb exists
             prefix, count, all_kept_mutants, all_mutants_tried, exists = does_file_exist(prefix, i, count, all_kept_mutants, all_mutants_tried)
             if not exists:
                 continue
-            print(i)
-            (mutation_code, site) = generate_mutation_code(prefix)
+
+            if available_mutations == 'random':
+                (mutation_code, site) = generate_mutation_code(prefix)
+            elif available_mutations == 'list':
+                (mutation_code, site) = pick_mutation_code_from_list(remaining_mutations)
+                remaining_mutations.remove(mutation_code)
+
             foldx.runFoldxSimpleMutator(mutation_code, [prefix + '.pdb'])
 
             (new_mutant_name, old_mutant_name) = recode_mutant_pdb(mutation_code, site, prefix)
@@ -92,7 +100,7 @@ def main():
             to_file = str(count) + '.pdb' + '\t' + str(ids[1][0:-4]) + '\t' + str(count) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(binding[1]) + '\t' + str(probability) + '\n'
             write_line(all_file, to_file)
 
-            if random.random() < probability:
+            if random.random() < probability or available_mutations == 'list':
                 print('\n\nPassing to the next round...\n')
                 score_ob.cleanUp(['*energies*', 'WT_*'])
       
@@ -155,39 +163,6 @@ def get_pdb_sequence(prefix):
 
     return(total_sequence, total_length, first_chain_length, structure)
 
-def generate_initial_dna_sequence(prefix):
-    codon_table = {
-    'A': ('GCT', 'GCC', 'GCA', 'GCG'),
-    'C': ('TGT', 'TGC'),
-    'D': ('GAT', 'GAC'),
-    'E': ('GAA', 'GAG'),
-    'F': ('TTT', 'TTC'),
-    'G': ('GGT', 'GGC', 'GGA', 'GGG'),
-    'I': ('ATT', 'ATC', 'ATA'),
-    'H': ('CAT', 'CAC'),
-    'K': ('AAA', 'AAG'),
-    'L': ('TTA', 'TTG', 'CTT', 'CTC', 'CTA', 'CTG'),
-    'M': ('ATG',),
-    'N': ('AAT', 'AAC'),
-    'P': ('CCT', 'CCC', 'CCA', 'CCG'),
-    'Q': ('CAA', 'CAG'),
-    'R': ('CGT', 'CGC', 'CGA', 'CGG', 'AGA', 'AGG'),
-    'S': ('TCT', 'TCC', 'TCA', 'TCG', 'AGT', 'AGC'),
-    'T': ('ACT', 'ACC', 'ACA', 'ACG'),
-    'V': ('GTT', 'GTC', 'GTA', 'GTG'),
-    'W': ('TGG',),
-    'Y': ('TAT', 'TAC'),
-    '*': ('TAA', 'TAG', 'TGA'),
-    }
-
-    total_sequence, total_length = get_pdb_sequence(prefix)
-    dna_sequence                 = ''
-
-    for aa in total_sequence:
-        dna_sequence += codon_table[aa][0]
-
-    return(dna_sequence)
-
 def generate_mutation_code(prefix):
     total_sequence, total_length, first_chain_length, structure = get_pdb_sequence(prefix)
     site                                                        = random.randint(0, total_length - 1)
@@ -211,6 +186,10 @@ def generate_mutation_code(prefix):
     mutation_code = total_sequence[site] + chain_letters[chain] + residue_numbers[site] + mutation
   
     return(mutation_code, residue_numbers[site])
+
+def pick_mutation_code_from_list(remaining_mutations):
+    mutation_code = random.choice(remaining_mutations)
+    return(mutation_code, mutation_code[2:-1])
   
 def calc_prob(stab1, stab2, binding, N, beta, thresholds):
   '''In order to use this function, you need to provide a number of parameters.
@@ -265,6 +244,7 @@ def recode_mutant_pdb(mutation_code, site, prefix):
     shutil.move(old_test, new_mutant_name[0:-4] + '_' + str(len(existing)/2) + '.wt.pdb')
   
   shutil.copy(prefix + '.pdb', recoded_mutant + '.wt.pdb')  
+  print(foldx.rev_resdict[mutation_code[-1]] + site + '_' + prefix + '.pdb')
   shutil.move(foldx.rev_resdict[mutation_code[-1]] + site + '_' + prefix + '.pdb', new_test)
   
   #Remove the unused file that is output from position scan
