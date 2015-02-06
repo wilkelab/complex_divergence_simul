@@ -5,16 +5,16 @@ from Bio import *
 import Bio.PDB as PDB
 
 def main():
-    if len( sys.argv ) != 11:
+    if len( sys.argv ) != 14:
         print '''
 
         You don't have the right number of arguments.
 
         Input line should resemble:
-        python calculate_distance.py prefix list/random num_tried/num_fixed selection/no_selection population-size beta num-mutations dGt1 dGt2 dGt3 fixed_mutation_file all_mutation_file
+        python calculate_distance.py prefix list/random num_tried/num_fixed selection/no_selection chain population-size beta num-mutations dGt1 dGt2 dGt3 fixed_mutation_file all_mutation_file
 
         For example:
-        python main.py 2eke list/random num_tried/num_fixed selection/no_selection 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
+        python main.py 2eke list/random num_tried/num_fixed selection/no_selection chain 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
 
         '''
     else:
@@ -23,14 +23,15 @@ def main():
         available_mutations = args[2]
         tried_or_fixed      = args[3]
         selection           = args[4]
-        population_size     = float(args[5])
-        beta                = float(args[6])
-        num_mutations       = int(args[7])
-        dGt1                = float(args[8])
-        dGt2                = float(args[9])
-        dGt3                = float(args[10])
-        out_file            = args[11]
-        all_file            = args[12]
+        which_chain         = args[5]
+        population_size     = float(args[6])
+        beta                = float(args[7])
+        num_mutations       = int(args[8])
+        dGt1                = float(args[9])
+        dGt2                = float(args[10])
+        dGt3                = float(args[11])
+        out_file            = args[12]
+        all_file            = args[13]
 
         all_kept_mutants    = []
         all_mutants_tried   = []
@@ -61,7 +62,7 @@ def main():
                 continue
 
             if available_mutations == 'random':
-                (mutation_code, site) = generate_mutation_code(prefix)
+                (mutation_code, site) = generate_mutation_code(prefix, which_chain)
             elif available_mutations == 'list':
                 (mutation_code, site) = pick_mutation_code_from_list(remaining_mutations)
                 remaining_mutations.remove(mutation_code)
@@ -182,12 +183,18 @@ def get_pdb_sequence(prefix):
 
     return(total_sequence, total_length, first_chain_length, structure)
 
-def generate_mutation_code(prefix):
+def generate_mutation_code(prefix, which_chain):
     total_sequence, total_length, first_chain_length, structure = get_pdb_sequence(prefix)
-    site                                                        = random.randint(0, total_length - 1)
     chain                                                       = 0
     chain_letters                                               = ''
     residue_numbers                                             = []
+
+    if which_chain == 'both':
+        site = random.randint(0, total_length - 1)
+    elif which_chain == '0':
+        site = random.randint(0, first_chain_length)
+    elif which_chain == '1':
+        site = random.randint(first_chain_length, total_length - 1)
 
     if site > first_chain_length - 1:
         chain = 1
