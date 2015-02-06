@@ -11,24 +11,26 @@ def main():
         You don't have the right number of arguments.
 
         Input line should resemble:
-        python calculate_distance.py prefix population-size beta num-mutations dGt1 dGt2 dGt3 fixed_mutation_file all_mutation_file
+        python calculate_distance.py prefix list/random num_tried/num_fixed selection/no_selection population-size beta num-mutations dGt1 dGt2 dGt3 fixed_mutation_file all_mutation_file
 
         For example:
-        python main.py 2eke list/random 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
+        python main.py 2eke list/random num_tried/num_fixed selection/no_selection 1000 10 10 -23.0 -5.0 -9.7 kept_mutants.txt all_mutants_tried.txt
 
         '''
     else:
         args =  sys.argv
         prefix              = args[1]
         available_mutations = args[2]
-        population_size     = float(args[3])
-        beta                = float(args[4])
-        num_tried           = int(args[5])
-        dGt1                = float(args[6])
-        dGt2                = float(args[7])
-        dGt3                = float(args[8])
-        out_file            = args[9]
-        all_file            = args[10]
+        tried_or_fixed      = args[3]
+        selection           = args[4]
+        population_size     = float(args[5])
+        beta                = float(args[6])
+        num_mutations       = int(args[7])
+        dGt1                = float(args[8])
+        dGt2                = float(args[9])
+        dGt3                = float(args[10])
+        out_file            = args[11]
+        all_file            = args[12]
 
         all_kept_mutants    = []
         all_mutants_tried   = []
@@ -38,8 +40,9 @@ def main():
         initialize_output_files(out_file, all_file)
 
         if available_mutations == 'list':
-             remaining_mutations = [mut.strip() for mut in list(open('mutations.txt', 'r').readlines())]
-             num_tried = len(remaining_mutations)
+            remaining_mutations = [mut.strip() for mut in list(open('mutations.txt', 'r').readlines())]
+        else:
+            remaining_mutations = ['unused', 'unused']
 
         foldx.runFoldxRepair(prefix, [prefix + '.bak'])
         score_ob = foldx.Scores()
@@ -50,7 +53,8 @@ def main():
         else:
             raise Exception('No output from RepairPDB.')    
 
-        for i in range(0, num_tried):
+        i = 0
+        while i < num_mutations and len(remaining_mutations) > 0:
             #Make sure the pdb exists
             prefix, count, all_kept_mutants, all_mutants_tried, exists = does_file_exist(prefix, i, count, all_kept_mutants, all_mutants_tried)
             if not exists:
@@ -78,6 +82,7 @@ def main():
             if not proceed:
                 score_ob = foldx.Scores()
                 score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*', '*energies*'])
+                remaining_mutations.append(mutation_code)
                 continue
 
             #Declare the score parsing object
@@ -100,7 +105,7 @@ def main():
             to_file = str(count) + '.pdb' + '\t' + str(ids[1][0:-4]) + '\t' + str(count) + '\t' + str(stab1[1]) + '\t' + str(stab2[1]) + '\t' + str(binding[1]) + '\t' + str(probability) + '\n'
             write_line(all_file, to_file)
 
-            if random.random() < probability or available_mutations == 'list':
+            if random.random() < probability or selection == 'no_selection':
                 print('\n\nPassing to the next round...\n')
                 score_ob.cleanUp(['*energies*', 'WT_*'])
       
@@ -111,9 +116,15 @@ def main():
                 shutil.move(old_mutant_name, str(count) + '.wt.pdb')
                 prefix = str(count)
                 all_kept_mutants.append(new_mutant_name[0:-4])
+            elif available_mutations == 'list':
+                print('\n\nMutation is being reverted...\n')
+                score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
+                remaining_mutations.append(mutation_code)
             else:
                 print('\n\nMutation is being reverted...\n')
                 score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
+            
+            i += 1
 
         score_ob.cleanUp(['*energies*'])
 
