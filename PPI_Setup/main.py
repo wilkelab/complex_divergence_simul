@@ -116,15 +116,23 @@ def main():
                 shutil.move(old_mutant_name, str(count) + '.wt.pdb')
                 prefix = str(count)
                 all_kept_mutants.append(new_mutant_name[0:-4])
+
+                i+=1
+
             elif available_mutations == 'list':
                 print('\n\nMutation is being reverted...\n')
                 score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
                 remaining_mutations.append(mutation_code)
+
+                if tried_or_fixed == 'tried':
+                    i+=1
+
             else:
                 print('\n\nMutation is being reverted...\n')
                 score_ob.cleanUp(['*' + new_mutant_name[0:-4] + '*'])
-            
-            i += 1
+
+                if tried_fixed == 'tried':
+                    i+=1
 
         score_ob.cleanUp(['*energies*'])
 
