@@ -2,6 +2,7 @@ PPI simulation work of Kacharoo et al., Science 348:921–925, 2015
 ========================
 This repository contains the code and data that were used to carry out the protein-protein interaction simulations of this paper:
 > A. H. Kachroo, J. M. Laurent, C. M. Yellman, A. G. Meyer, C. O. Wilke, E. M. Marcotte (2015). Systematic humanization of yeast genes reveals conserved functions and genetic modularity. Science 348:921–925.
+
 It is provided as is, as a record of the research performed. The code in this repository is not actively maintained.
 
 ## Description of the analysis pipeline
